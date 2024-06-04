@@ -7,5 +7,5 @@ import december.spring.studywithme.entity.User;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUserId(String userId);
+	Optional<User> findByUserId(String id);
 }
