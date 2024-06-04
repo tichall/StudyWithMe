@@ -18,9 +18,11 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor
 @Table(name = "user")
 public class User extends Timestamped {
@@ -64,6 +66,10 @@ public class User extends Timestamped {
 		this.userType = userType;
 		this.statusChangedAt = statusChangedAt;
 	}
+	
+	//회원 상태 변경
+	public void withdrawUser() {
+		this.userType = UserType.DEACTIVATED;
 	}
 	
 }
