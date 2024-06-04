@@ -23,11 +23,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final JwtUtil jwtUtil;
 
-   // private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenRepository refreshTokenRepository) {
         this.jwtUtil = jwtUtil;
-        //this.refreshTokenRepository = refreshTokenRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         setFilterProcessesUrl("/api/users/login");
     }
 
@@ -57,9 +57,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = jwtUtil.createAccessToken(username);
         String refreshToken = jwtUtil.createRefreshToken(username);
 
-//        User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
-//        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken);
-//        refreshTokenRepository.save(refreshTokenEntity);
+        User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
+        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken);
+        refreshTokenRepository.save(refreshTokenEntity);
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
         response.addHeader(JwtUtil.REFRESH_HEADER, refreshToken);
