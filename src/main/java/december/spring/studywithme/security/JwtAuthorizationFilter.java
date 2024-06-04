@@ -29,7 +29,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         String tokenValue = jwtUtil.getJwtFromHeader(req);
-
         if (StringUtils.hasText(tokenValue)) {
             if (jwtUtil.validateToken(tokenValue)) {
                 // 토큰이 유효한 경우
@@ -74,7 +73,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return false;
             }
         } else {
-            log.error("Token Error");
+            log.error("Token Error!!!");
             respondWithError(res, "리프레시 토큰이 유효하지 않습니다.");
             return false;
         }

@@ -1,6 +1,5 @@
 package december.spring.studywithme.repository;
 
-import december.spring.studywithme.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import december.spring.studywithme.entity.User;

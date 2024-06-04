@@ -76,19 +76,19 @@ public class JwtUtil {
 
     // 토큰 검증
     public boolean validateToken(String token) {
-        return validateTokenInternal(token, key);
+        return validateTokenInternal(token);
     }
 
     // 리프레시 토큰 검증
     public boolean validateRefreshToken(String token) {
-        return validateTokenInternal(token, key);
+        return validateTokenInternal(token);
     }
 
     // 토큰 검증 공통 로직
-    private boolean validateTokenInternal(String token, Key signingKey) {
+    private boolean validateTokenInternal(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(signingKey)
+                    .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
             return true;

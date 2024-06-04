@@ -2,10 +2,10 @@ package december.spring.studywithme.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import december.spring.studywithme.dto.LoginRequestDto;
-import december.spring.studywithme.entity.RefreshToken;
 import december.spring.studywithme.entity.User;
 import december.spring.studywithme.jwt.JwtUtil;
-import december.spring.studywithme.repository.RefreshTokenRepository;
+import december.spring.studywithme.repository.UserRepository;
+import december.spring.studywithme.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -23,11 +22,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final JwtUtil jwtUtil;
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenRepository refreshTokenRepository) {
+
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.userRepository = userRepository;
         setFilterProcessesUrl("/api/users/login");
     }
 
@@ -57,8 +57,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String refreshToken = jwtUtil.createRefreshToken(username);
 
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
-        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken);
-        refreshTokenRepository.save(refreshTokenEntity);
+        user.refreshTokenReset(refreshToken);
+        userRepository.save(user);
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
         response.addHeader(JwtUtil.REFRESH_HEADER, refreshToken);

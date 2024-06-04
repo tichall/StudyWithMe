@@ -3,8 +3,6 @@ package december.spring.studywithme.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import december.spring.studywithme.entity.RefreshToken;
-import december.spring.studywithme.repository.RefreshTokenRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +14,6 @@ import december.spring.studywithme.entity.User;
 import december.spring.studywithme.entity.UserType;
 import december.spring.studywithme.exception.UserException;
 import december.spring.studywithme.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -25,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final RefreshTokenRepository refreshTokenRepository;
 	
 	/**
 	 * 1. 회원가입
@@ -91,13 +87,23 @@ public class UserService {
 		}
 	}
 
+	//로그아웃
 	@Transactional
 	public void logout(User user) {
 
-		RefreshToken refreshToken = refreshTokenRepository.findById(user.getRefreshToken().getId())
-				.orElseThrow(() -> new UserException("로그아웃할 수 없습니다."));
+		if(user==null){
+			throw new UserException("로그인되어 있는 유저가 아닙니다.");
+		}
 
-		refreshTokenRepository.delete(refreshToken);
+		if(user.getUserType().equals(UserType.DEACTIVATED)){
+			throw new UserException("탈퇴한 회원입니다.");
+		}
 
+		User existingUser = userRepository.findByUserId(user.getUserId())
+						.orElseThrow(() -> new UserException("해당 유저가 존재하지 않습니다."));
+
+		existingUser.refreshTokenReset("");
+		userRepository.save(existingUser);
 	}
+
 }

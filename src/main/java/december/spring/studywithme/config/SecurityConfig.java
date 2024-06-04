@@ -1,10 +1,11 @@
 package december.spring.studywithme.config;
 
 import december.spring.studywithme.jwt.JwtUtil;
-import december.spring.studywithme.repository.RefreshTokenRepository;
+import december.spring.studywithme.repository.UserRepository;
 import december.spring.studywithme.security.JwtAuthenticationFilter;
 import december.spring.studywithme.security.JwtAuthorizationFilter;
 import december.spring.studywithme.security.UserDetailsServiceImpl;
+import december.spring.studywithme.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,7 +43,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, refreshTokenRepository);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, userRepository);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
