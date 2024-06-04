@@ -48,12 +48,12 @@ public class UserController {
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		String userId = userService.withdrawUser(requestDTO, userDetails.getUser());
 		
-		ResponseMessage<String> responseMessag = ResponseMessage.<String>builder()
+		ResponseMessage<String> responseMessage = ResponseMessage.<String>builder()
 			.statusCode(HttpStatus.OK.value())
 			.message("회원 탈퇴가 완료되었습니다.")
 			.data(userId)
 			.build();
 		
-		return new ResponseEntity<>(responseMessag, HttpStatus.OK);
+		return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 	}
 }
