@@ -3,6 +3,8 @@ package december.spring.studywithme.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import december.spring.studywithme.entity.RefreshToken;
+import december.spring.studywithme.repository.RefreshTokenRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final RefreshTokenRepository refreshTokenRepository;
 	
 	/**
 	 * 1. 회원가입
@@ -86,5 +89,15 @@ public class UserService {
 		if (userType.equals(UserType.DEACTIVATED)) {
 			throw new UserException("이미 탈퇴한 회원입니다.");
 		}
+	}
+
+	@Transactional
+	public void logout(User user) {
+
+		RefreshToken refreshToken = refreshTokenRepository.findById(user.getRefreshToken().getId())
+				.orElseThrow(() -> new UserException("로그아웃할 수 없습니다."));
+
+		refreshTokenRepository.delete(refreshToken);
+
 	}
 }
