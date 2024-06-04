@@ -55,13 +55,15 @@ public class User extends Timestamped {
 	private List<Post> postList;
 	
 	@Builder
-	public User(String userId, String password, String name, String email, String introduce, UserType userType) {
+	public User(String userId, String password, String name, String email, String introduce, UserType userType, LocalDateTime statusChangedAt) {
 		this.userId = userId;
 		this.password = password;
 		this.name = name;
 		this.email = email;
 		this.introduce = introduce;
 		this.userType = userType;
+		this.statusChangedAt = statusChangedAt;
+	}
 	}
 	
 }
