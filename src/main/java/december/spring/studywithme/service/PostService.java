@@ -3,6 +3,7 @@ package december.spring.studywithme.service;
 import december.spring.studywithme.dto.PostRequestDto;
 import december.spring.studywithme.dto.PostResponseDto;
 import december.spring.studywithme.entity.Post;
+import december.spring.studywithme.exception.PostException;
 import december.spring.studywithme.security.UserDetailsImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,5 +25,10 @@ public class PostService {
 				.build();
 		Post savePost = postRepository.save(post);
 		return new PostResponseDto(savePost);
+	}
+
+	public PostResponseDto getPost(Long postID) {
+		Post post = postRepository.findById(postID).orElseThrow(() -> new PostException("해당 게시물이 없습니다."));
+		return new PostResponseDto(post);
 	}
 }
