@@ -3,14 +3,12 @@ package december.spring.studywithme.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import december.spring.studywithme.dto.UserInfoResponseDTO;
+import december.spring.studywithme.dto.*;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import december.spring.studywithme.dto.PasswordRequestDTO;
-import december.spring.studywithme.dto.UserRequestDTO;
-import december.spring.studywithme.dto.UserResponseDTO;
 import december.spring.studywithme.entity.User;
 import december.spring.studywithme.entity.UserType;
 import december.spring.studywithme.exception.UserException;
@@ -23,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     /**
      * 1. 회원가입
@@ -108,9 +107,26 @@ public class UserService {
         userRepository.save(existingUser);
     }
 
-    public UserInfoResponseDTO inquiryUser(String userId) {
-        User user = userRepository.findByUserId(userId).orElseThrow(); // 핸들러는 별도로 낚아채는거고 오히려 여기서 예외를 던져야함
-        return new UserInfoResponseDTO(user);
+    public UserProfileResponseDTO inquiryUser(String userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserException("해당 유저를 찾을 수 없습니다."));
+        return new UserProfileResponseDTO(user);
     }
+
+    @Transactional
+    public UserResponseDTO updateProfile(UserProfileUpateRequestDTO requestDTO, User user) {
+
+        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
+            throw new UserException("비밀번호가 일치하지 않습니다.");
+        }
+        if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
+            throw new UserException("새로운 비밀번호와 기존 비밀번호가 동일합니다.");
+        }
+
+        user.editProfile(requestDTO.getName(), passwordEncoder.encode(requestDTO.getNewPassword()), requestDTO.getIntroduce());
+
+        userRepository.save(user);
+        return new UserResponseDTO(user);
+    }
+
 
 }

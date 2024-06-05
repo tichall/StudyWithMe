@@ -2,10 +2,9 @@ package december.spring.studywithme.dto;
 
 import december.spring.studywithme.entity.User;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-public class UserInfoResponseDTO {
+public class UserProfileResponseDTO {
 
 
     private Long id;
@@ -16,7 +15,7 @@ public class UserInfoResponseDTO {
 
     private String introduce;
 
-    public UserInfoResponseDTO(User user) {
+    public UserProfileResponseDTO(User user) {
         this.id = id;
         this.userId = userId;
         this.email = email;
