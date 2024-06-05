@@ -1,5 +1,7 @@
 package december.spring.studywithme.controller;
 
+import december.spring.studywithme.jwt.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/users")
 public class UserController {
 	private final UserService userService;
+	private final JwtUtil jwtUtil;
 	
 	/**
 	 * 1. 회원가입
@@ -53,14 +56,20 @@ public class UserController {
 		return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 	}
 
-	//로그아웃
+	/**
+	 * 로그아웃
+	 */
 	@GetMapping("/logout")
-	public ResponseEntity<ResponseMessage> logout(@AuthenticationPrincipal UserDetailsImpl userDetails){
-		userService.logout(userDetails.getUser());
+	public ResponseEntity<ResponseMessage<String>> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request){
 
-		return ResponseEntity.ok(ResponseMessage.builder()
+		String accessToken = jwtUtil.getJwtFromHeader(request);
+		String refreshToken = jwtUtil.getJwtRefreshTokenFromHeader(request);
+		userService.logout(userDetails.getUser(), accessToken, refreshToken);
+
+		return ResponseEntity.ok(ResponseMessage.<String>builder()
 			.statusCode(HttpStatus.OK.value())
 			.message("로그아웃이 완료되었습니다.")
+			.data(userDetails.getUser().getUserId())
 			.build());
 	}
 }

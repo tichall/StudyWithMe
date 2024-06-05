@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j(topic = "JwtUtil")
 @Component
@@ -28,6 +30,8 @@ public class JwtUtil {
     private static final long TOKEN_TIME = 30 * 60 * 1000L;
     // 리프레시 토큰 만료시간 (7일)
     private static final long REFRESH_TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;
+    //로그아웃 토큰 블랙리스트
+    private Set<String> tokenBlacklist = ConcurrentHashMap.newKeySet();
 
     // JWT secret key
     @Value("${jwt.secret.key}")
@@ -74,6 +78,15 @@ public class JwtUtil {
         return null;
     }
 
+    // header에서 JWT 리프레시 토큰 가져오기
+    public String getJwtRefreshTokenFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader(REFRESH_HEADER);
+        if (bearerToken != null && bearerToken.startsWith(BEAR)) {
+            return bearerToken.substring(BEAR.length());
+        }
+        return null;
+    }
+
     // 토큰 검증
     public boolean validateToken(String token) {
         return validateTokenInternal(token);
@@ -86,6 +99,10 @@ public class JwtUtil {
 
     // 토큰 검증 공통 로직
     private boolean validateTokenInternal(String token) {
+        if (isTokenBlacklisted(token)) {
+            throw new IllegalArgumentException("이미 로그아웃된 토큰입니다.");
+        }
+
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -130,5 +147,15 @@ public class JwtUtil {
             return createAccessToken(username); // 사용자 역할이 필요하면 두 번째 인자에 역할을 전달
         }
         return null;
+    }
+
+    //토큰 블랙리스트 추가
+    public void invalidateToken(String token) {
+        tokenBlacklist.add(token);
+    }
+
+    //토큰 블랙리스트 검사
+    private boolean isTokenBlacklisted(String token) {
+        return tokenBlacklist.contains(token);
     }
 }
