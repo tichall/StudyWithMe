@@ -28,9 +28,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     // 토큰 검증
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("filter 시작");
         String tokenValue = jwtUtil.getJwtFromHeader(req);
-        System.out.println("tokenValue = "+ tokenValue );
         if (StringUtils.hasText(tokenValue)) {
             if (jwtUtil.validateToken(tokenValue)) {
                 // 토큰이 유효한 경우
