@@ -1,7 +1,9 @@
 package december.spring.studywithme.security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import december.spring.studywithme.dto.LoginRequestDto;
+import december.spring.studywithme.dto.ResponseMessage;
 import december.spring.studywithme.entity.User;
 import december.spring.studywithme.jwt.JwtUtil;
 import december.spring.studywithme.repository.UserRepository;
@@ -10,6 +12,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -50,7 +54,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
 
         String accessToken = jwtUtil.createAccessToken(username);
@@ -60,8 +64,28 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         user.refreshTokenReset(refreshToken);
         userRepository.save(user);
 
+        // 응답 헤더에 토큰 추가
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
         response.addHeader(JwtUtil.REFRESH_HEADER, refreshToken);
+
+        // JSON 응답 작성
+        writeJsonResponse(response, HttpStatus.OK, "로그인에 성공했습니다.", authResult.getName());
+
+        log.info("User = {}, message = {}", username, "로그인에 성공했습니다.");
+    }
+
+    private void writeJsonResponse(HttpServletResponse response, HttpStatus status, String message, String data) throws IOException {
+        ResponseMessage<String> responseMessage = ResponseMessage.<String>builder()
+                .statusCode(status.value())
+                .message(message)
+                .data(data)
+                .build();
+
+        String jsonResponse = new ObjectMapper().writeValueAsString(responseMessage);
+        response.setStatus(status.value());
+        response.setContentType("application/json; charset=UTF-8");
+        response.getWriter().write(jsonResponse);
+        response.getWriter().flush();
     }
 
     @Override
