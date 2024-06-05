@@ -30,8 +30,8 @@ public class PostService {
 		return new PostResponseDto(savePost);
 	}
 
-	public PostResponseDto getPost(Long postID) {
-		Post post = postRepository.findById(postID).orElseThrow(() -> new PostException("해당 게시물이 없습니다."));
+	public PostResponseDto getPost(Long id) {
+		Post post = getValidatePost(id);
 		return new PostResponseDto(post);
 	}
 
@@ -47,7 +47,8 @@ public class PostService {
 
 	@Transactional
 	public PostResponseDto updatePost(Long id, UserDetailsImpl userDetails, PostRequestDto requestDto) {
-		Post post = getValidatePost(id, userDetails);
+		Post post = getValidatePost(id);
+		checkPostWriter(post, userDetails);
 
 		// 수정 진행
 		post.update(requestDto);
@@ -58,19 +59,17 @@ public class PostService {
 
 	@Transactional
 	public void deletePost(Long id, UserDetailsImpl userDetails) {
-		Post post = getValidatePost(id, userDetails);
+		Post post = getValidatePost(id);
+		checkPostWriter(post, userDetails);
 		postRepository.delete(post);
 	}
 
 	/**
-	 * 게시글 접근 가능 여부 확인
+	 * 게시글 존재 여부 확인
 	 */
-	private Post getValidatePost(Long id, UserDetailsImpl userDetails) {
-		Post post =  postRepository.findById(id).orElseThrow(() ->
+	private Post getValidatePost(Long id) {
+		return postRepository.findById(id).orElseThrow(() ->
 				new PostException("게시글이 존재하지 않습니다."));
-
-		checkPostWriter(post, userDetails);
-		return post;
 	}
 
 	/**
