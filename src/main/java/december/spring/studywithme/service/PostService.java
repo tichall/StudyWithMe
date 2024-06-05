@@ -3,6 +3,7 @@ package december.spring.studywithme.service;
 import december.spring.studywithme.dto.PostRequestDto;
 import december.spring.studywithme.dto.PostResponseDto;
 import december.spring.studywithme.entity.Post;
+import december.spring.studywithme.entity.User;
 import december.spring.studywithme.exception.NoPostException;
 import december.spring.studywithme.exception.PostException;
 import december.spring.studywithme.security.UserDetailsImpl;
@@ -80,4 +81,14 @@ public class PostService {
 			throw new PostException("작성자가 아니므로, 접근이 제한됩니다.");
 		}
 	}
+
+    public boolean likePost(Long postId, User user) {
+
+		Post post = postRepository.findById(postId).orElseThrow(() ->
+				new PostException("게시글이 존재하지 않습니다."));
+
+
+
+		return false;
+    }
 }
