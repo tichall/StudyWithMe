@@ -56,7 +56,9 @@ public class UserController {
 		return new ResponseEntity<>(responseMessage, HttpStatus.OK);
 	}
 
-	//로그아웃
+	/**
+	 * 로그아웃
+	 */
 	@GetMapping("/logout")
 	public ResponseEntity<ResponseMessage> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request){
 

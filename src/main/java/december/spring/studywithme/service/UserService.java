@@ -89,8 +89,9 @@ public class UserService {
 			throw new UserException("이미 탈퇴한 회원입니다.");
 		}
 	}
-
-	//로그아웃
+	/**
+	*로그아웃
+	 */
 	@Transactional
 	public void logout(User user, String accessToken, String refreshToken) {
 
