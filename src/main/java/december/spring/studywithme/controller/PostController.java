@@ -26,7 +26,7 @@ public class PostController {
 		PostResponseDto postResponseDto = postService.createPost(userDetails, request);
 		ResponseMessage<PostResponseDto> responseMessage = ResponseMessage.<PostResponseDto>builder()
 				.statusCode(HttpStatus.CREATED.value())
-				.message("생성 완료")
+				.message("게시글 생성이 완료되었습니다.")
 				.data(postResponseDto)
 				.build();
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
@@ -37,7 +37,7 @@ public class PostController {
 		PostResponseDto postResponseDto = postService.getPost(id);
 		ResponseMessage<PostResponseDto> responseMessage = ResponseMessage.<PostResponseDto>builder()
 				.statusCode(HttpStatus.OK.value())
-				.message("게시물 조회 완료")
+				.message("게시글 조회가 완료되었습니다.")
 				.data(postResponseDto)
 				.build();
 		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
