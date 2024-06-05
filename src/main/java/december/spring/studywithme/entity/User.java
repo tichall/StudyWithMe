@@ -18,10 +18,13 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @NoArgsConstructor
+@Getter
 @Table(name = "user")
 public class User extends Timestamped {
 	@Id
@@ -45,8 +48,8 @@ public class User extends Timestamped {
 	@Enumerated(value = EnumType.STRING)
 	private UserType userType;
 	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private RefreshToken refreshToken;
+	@Column
+	private String refreshToken;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private LocalDateTime statusChangedAt;
@@ -55,13 +58,25 @@ public class User extends Timestamped {
 	private List<Post> postList;
 	
 	@Builder
-	public User(String userId, String password, String name, String email, String introduce, UserType userType) {
+	public User(String userId, String password, String name, String email, String introduce, UserType userType, LocalDateTime statusChangedAt) {
 		this.userId = userId;
 		this.password = password;
 		this.name = name;
 		this.email = email;
 		this.introduce = introduce;
 		this.userType = userType;
+		this.statusChangedAt = statusChangedAt;
+	}
+	
+	//회원 상태 변경
+	public void withdrawUser() {
+		this.userType = UserType.DEACTIVATED;
+	}
+
+	@Transactional
+	//로그인시 리프레시 토큰 초기화
+	public void refreshTokenReset(String refreshToken) {
+		this.refreshToken = refreshToken;
 	}
 	
 }
