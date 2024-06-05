@@ -1,8 +1,11 @@
 package december.spring.studywithme.service;
 
+import december.spring.studywithme.dto.PostRequestDto;
 import december.spring.studywithme.dto.PostResponseDto;
 import december.spring.studywithme.entity.Post;
 import december.spring.studywithme.exception.NoPostException;
+import december.spring.studywithme.security.UserDetailsImpl;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +19,55 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class PostService {
 	private final PostRepository postRepository;
+	@Transactional
+	public PostResponseDto createPost(UserDetailsImpl userDetails, PostRequestDto request) {
+		Post post = Post.builder()
+				.title(request.getTitle())
+				.contents(request.getContents())
+				.user(userDetails.getUser())
+				.build();
+		Post savePost = postRepository.save(post);
+		return new PostResponseDto(savePost);
+	}
 
-	public List<PostResponseDto> getAllPost() {
-		List<Post> postList = postRepository.findAllByOrderByCreateAtDesc();
+    public List<PostResponseDto> getAllPost() {
+        List<Post> postList = postRepository.findAllByOrderByCreateAtDesc();
 
-		if (postList.isEmpty()) {
-			throw new NoPostException("먼저 작성하여 소식을 알려보세요!");
+        if (postList.isEmpty()) {
+            throw new NoPostException("먼저 작성하여 소식을 알려보세요!");
+        }
+
+        return postList.stream().map(PostResponseDto::new).toList();
+    }
+
+	@Transactional
+	public PostResponseDto updatePost(Long id, UserDetails userDetails, PostRequestDto requestDto) {
+		Post post = getValidatePost(id, userDetails);
+
+		// 수정 진행
+		post.update(requestDto);
+		postRepository.flush();
+
+		return new PostResponseDto(post);
+	}
+
+	/**
+	 * 게시글 접근 가능 여부 확인
+	 */
+	private Post getValidatePost(Long id, UserDetails userDetails) {
+		Post post =  postRepository.findById(id).orElseThrow(() ->
+				new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+		checkPostWriter(post, userDetails);
+		return post;
+	}
+
+	/**
+	 * 게시글 작성자 정보 확인
+	 */
+	private void checkPostWriter(Post post, UserDetails userDetails) {
+		if (!post.getUser().getUserId().equals(userDetails.getUsername())) {
+			throw new IllegalArgumentException("작성자가 아니므로, 접근이 제한됩니다.");
 		}
-
-		return postList.stream().map(PostResponseDto::new).toList();
 	}
 }

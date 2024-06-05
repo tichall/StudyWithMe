@@ -1,5 +1,6 @@
 package december.spring.studywithme.entity;
 
+import december.spring.studywithme.dto.PostRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +13,8 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -37,5 +40,10 @@ public class Post extends Timestamped{
 		this.user = user;
 		this.title = title;
 		this.contents = contents;
+	}
+
+	public void update(PostRequestDto requestDto) {
+		this.title = requestDto.getTitle();
+		this.contents = requestDto.getContents();
 	}
 }
