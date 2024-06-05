@@ -14,7 +14,6 @@ import december.spring.studywithme.entity.User;
 import december.spring.studywithme.entity.UserType;
 import december.spring.studywithme.exception.UserException;
 import december.spring.studywithme.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -87,4 +86,24 @@ public class UserService {
 			throw new UserException("이미 탈퇴한 회원입니다.");
 		}
 	}
+
+	//로그아웃
+	@Transactional
+	public void logout(User user) {
+
+		if(user==null){
+			throw new UserException("로그인되어 있는 유저가 아닙니다.");
+		}
+
+		if(user.getUserType().equals(UserType.DEACTIVATED)){
+			throw new UserException("탈퇴한 회원입니다.");
+		}
+
+		User existingUser = userRepository.findByUserId(user.getUserId())
+						.orElseThrow(() -> new UserException("해당 유저가 존재하지 않습니다."));
+
+		existingUser.refreshTokenReset("");
+		userRepository.save(existingUser);
+	}
+
 }
