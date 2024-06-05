@@ -1,6 +1,8 @@
 package december.spring.studywithme.security;
 
 import december.spring.studywithme.jwt.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Optional;
 
 @Slf4j(topic = "JWT 검증 및 인가")
@@ -28,55 +31,46 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     // 토큰 검증
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-        String tokenValue = jwtUtil.getJwtFromHeader(req);
-        if (StringUtils.hasText(tokenValue)) {
-            if (jwtUtil.validateToken(tokenValue)) {
-                // 토큰이 유효한 경우
-                AccessToken(tokenValue);
-            } else {
-                // 토큰이 유효하지 않은 경우
-                if (!handleExpiredAccessToken(req, res)) {
-                    return; // 에러 응답을 보낸 경우 필터 체인 중단
+        String accessToken = jwtUtil.getJwtFromHeader(req);
+
+        if (StringUtils.hasText(accessToken)) {
+            try {
+                if (jwtUtil.validateToken(accessToken)) {
+                    setAuthentication(accessToken);
                 }
+            } catch (ExpiredJwtException e) {
+                handleExpiredAccessToken(req, res, e);
+            } catch (JwtException | IllegalArgumentException e) {
+                handleInvalidAccessToken(res);
+                return; // 에러 응답을 보낸 경우 필터 체인 중단
             }
         }
 
         filterChain.doFilter(req, res);
     }
 
-    // 인가
-    private void AccessToken(String token) {
-        String username = jwtUtil.getUsernameFromToken(token);
-        try {
+    //리프레시 토큰 검증
+    private void handleExpiredAccessToken(HttpServletRequest req, HttpServletResponse res, ExpiredJwtException e) throws IOException {
+        String refreshToken = jwtUtil.getJwtRefreshTokenFromHeader(req);
+
+        if (StringUtils.hasText(refreshToken) && jwtUtil.validateRefreshToken(refreshToken)) {
+            String username = jwtUtil.getUsernameFromRefreshToken(refreshToken);
+            String newAccessToken = jwtUtil.createAccessToken(username);
+
+            res.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
+            res.addHeader(JwtUtil.REFRESH_HEADER, refreshToken);
+
             setAuthentication(username);
-        } catch (Exception e) {
-            log.error(e.getMessage());
+
+            log.info("토큰 생성 완료!");
+        } else {
+            sendErrorResponse(res, "유효하지 않은 리프레시 토큰입니다.");
         }
     }
 
-    // 리프레시 토큰 검증
-    private boolean handleExpiredAccessToken(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        String refreshToken = Optional.ofNullable(req.getHeader(JwtUtil.REFRESH_HEADER))
-                .map(header -> header.substring(JwtUtil.BEAR.length()))
-                .orElse("");
-
-        if (StringUtils.hasText(refreshToken)) {
-            String newAccessToken = jwtUtil.refreshAccessToken(refreshToken);
-            if (newAccessToken != null) {
-                res.setHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
-                AccessToken(newAccessToken.substring(JwtUtil.BEAR.length()));
-                log.info("토큰 생성 완료");
-                return true;
-            } else {
-                log.error("Invalid Refresh Token");
-                respondWithError(res, "리프레시 토큰이 유효하지 않습니다.");
-                return false;
-            }
-        } else {
-            log.error("Token Error!!!");
-            respondWithError(res, "리프레시 토큰이 유효하지 않습니다.");
-            return false;
-        }
+    //유효하지 않은 액세스 토큰이 들어올 경우
+    private void handleInvalidAccessToken(HttpServletResponse res) throws IOException {
+        sendErrorResponse(res, "유효하지 않은 액세스 토큰입니다.");
     }
 
     // 인증 처리
@@ -95,9 +89,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     // 에러 메시지 응답
-    private void respondWithError(HttpServletResponse res, String message) throws IOException {
+    private void sendErrorResponse(HttpServletResponse res, String message) throws IOException {
         res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         res.setContentType("application/json; charset=UTF-8");
-        res.getWriter().write(String.format("{\"message\":\"%s\"}", message));
+        PrintWriter writer = res.getWriter();
+        writer.write("{\"message\":\"" + message + "\"}");
+        writer.flush();
     }
 }
