@@ -60,15 +60,16 @@ public class UserController {
 	 * 로그아웃
 	 */
 	@GetMapping("/logout")
-	public ResponseEntity<ResponseMessage> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request){
+	public ResponseEntity<ResponseMessage<String>> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request){
 
 		String accessToken = jwtUtil.getJwtFromHeader(request);
 		String refreshToken = jwtUtil.getJwtRefreshTokenFromHeader(request);
 		userService.logout(userDetails.getUser(), accessToken, refreshToken);
 
-		return ResponseEntity.ok(ResponseMessage.builder()
+		return ResponseEntity.ok(ResponseMessage.<String>builder()
 			.statusCode(HttpStatus.OK.value())
 			.message("로그아웃이 완료되었습니다.")
+			.data(userDetails.getUser().getUserId())
 			.build());
 	}
 }
