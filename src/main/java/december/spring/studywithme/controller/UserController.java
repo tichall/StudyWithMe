@@ -3,11 +3,7 @@ package december.spring.studywithme.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import december.spring.studywithme.dto.PasswordRequestDTO;
 import december.spring.studywithme.dto.ResponseMessage;
@@ -55,5 +51,16 @@ public class UserController {
 			.build();
 		
 		return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+	}
+
+	//로그아웃
+	@GetMapping("/logout")
+	public ResponseEntity<ResponseMessage> logout(@AuthenticationPrincipal UserDetailsImpl userDetails){
+		userService.logout(userDetails.getUser());
+
+		return ResponseEntity.ok(ResponseMessage.builder()
+			.statusCode(HttpStatus.OK.value())
+			.message("로그아웃이 완료되었습니다.")
+			.build());
 	}
 }
