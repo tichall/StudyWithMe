@@ -66,6 +66,7 @@ public class UserService {
 		
 		//회원 상태 변경
 		user.withdrawUser();
+		userRepository.save(user);
 		
 		return user.getUserId();
 	}
