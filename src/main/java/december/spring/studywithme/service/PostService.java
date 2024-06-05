@@ -67,7 +67,7 @@ public class PostService {
 	/**
 	 * 게시글 존재 여부 확인
 	 */
-	private Post getValidatePost(Long id) {
+	public Post getValidatePost(Long id) {
 		return postRepository.findById(id).orElseThrow(() ->
 				new PostException("게시글이 존재하지 않습니다."));
 	}
