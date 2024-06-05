@@ -59,4 +59,18 @@ public class PostController {
 				.status(HttpStatus.OK)
 				.body(responseMessage);
 	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<ResponseMessage<Void>> deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+		postService.deletePost(id, userDetails);
+
+		ResponseMessage<Void> responseMessage = ResponseMessage.<Void>builder()
+				.statusCode(HttpStatus.OK.value())
+				.message("게시글 삭제가 완료되었습니다.")
+				.build();
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(responseMessage);
+	}
 }

@@ -51,6 +51,12 @@ public class PostService {
 		return new PostResponseDto(post);
 	}
 
+	@Transactional
+	public void deletePost(Long id, UserDetails userDetails) {
+		Post post = getValidatePost(id, userDetails);
+		postRepository.delete(post);
+	}
+
 	/**
 	 * 게시글 접근 가능 여부 확인
 	 */
