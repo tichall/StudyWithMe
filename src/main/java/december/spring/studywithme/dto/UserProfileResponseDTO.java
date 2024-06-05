@@ -16,9 +16,9 @@ public class UserProfileResponseDTO {
     private String introduce;
 
     public UserProfileResponseDTO(User user) {
-        this.id = id;
-        this.userId = userId;
-        this.email = email;
-        this.introduce = introduce;
+        this.id = user.getId();
+        this.userId = user.getUserId();
+        this.email = user.getEmail();
+        this.introduce = user.getIntroduce();
     }
 }
