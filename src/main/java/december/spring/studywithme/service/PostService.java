@@ -4,8 +4,8 @@ import december.spring.studywithme.dto.PostRequestDto;
 import december.spring.studywithme.dto.PostResponseDto;
 import december.spring.studywithme.entity.Post;
 import december.spring.studywithme.exception.NoPostException;
+import december.spring.studywithme.exception.PostException;
 import december.spring.studywithme.security.UserDetailsImpl;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +30,11 @@ public class PostService {
 		return new PostResponseDto(savePost);
 	}
 
+	public PostResponseDto getPost(Long postID) {
+		Post post = postRepository.findById(postID).orElseThrow(() -> new PostException("해당 게시물이 없습니다."));
+		return new PostResponseDto(post);
+	}
+
     public List<PostResponseDto> getAllPost() {
         List<Post> postList = postRepository.findAllByOrderByCreateAtDesc();
 
@@ -41,7 +46,7 @@ public class PostService {
     }
 
 	@Transactional
-	public PostResponseDto updatePost(Long id, UserDetails userDetails, PostRequestDto requestDto) {
+	public PostResponseDto updatePost(Long id, UserDetailsImpl userDetails, PostRequestDto requestDto) {
 		Post post = getValidatePost(id, userDetails);
 
 		// 수정 진행
@@ -52,7 +57,7 @@ public class PostService {
 	}
 
 	@Transactional
-	public void deletePost(Long id, UserDetails userDetails) {
+	public void deletePost(Long id, UserDetailsImpl userDetails) {
 		Post post = getValidatePost(id, userDetails);
 		postRepository.delete(post);
 	}
@@ -60,9 +65,9 @@ public class PostService {
 	/**
 	 * 게시글 접근 가능 여부 확인
 	 */
-	private Post getValidatePost(Long id, UserDetails userDetails) {
+	private Post getValidatePost(Long id, UserDetailsImpl userDetails) {
 		Post post =  postRepository.findById(id).orElseThrow(() ->
-				new IllegalArgumentException("게시글이 존재하지 않습니다."));
+				new PostException("게시글이 존재하지 않습니다."));
 
 		checkPostWriter(post, userDetails);
 		return post;
@@ -71,9 +76,9 @@ public class PostService {
 	/**
 	 * 게시글 작성자 정보 확인
 	 */
-	private void checkPostWriter(Post post, UserDetails userDetails) {
+	private void checkPostWriter(Post post, UserDetailsImpl userDetails) {
 		if (!post.getUser().getUserId().equals(userDetails.getUsername())) {
-			throw new IllegalArgumentException("작성자가 아니므로, 접근이 제한됩니다.");
+			throw new PostException("작성자가 아니므로, 접근이 제한됩니다.");
 		}
 	}
 }

@@ -3,6 +3,7 @@ package december.spring.studywithme.controller;
 import december.spring.studywithme.dto.PostRequestDto;
 import december.spring.studywithme.dto.PostResponseDto;
 import december.spring.studywithme.dto.ResponseMessage;
+import december.spring.studywithme.entity.Post;
 import december.spring.studywithme.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,17 @@ public class PostController {
 				.data(postResponseDto)
 				.build();
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<ResponseMessage<PostResponseDto>> getPost(@PathVariable Long id) {
+		PostResponseDto postResponseDto = postService.getPost(id);
+		ResponseMessage<PostResponseDto> responseMessage = ResponseMessage.<PostResponseDto>builder()
+				.statusCode(HttpStatus.OK.value())
+				.message("게시물 조회 완료")
+				.data(postResponseDto)
+				.build();
+		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
 	}
 
     @GetMapping
