@@ -36,7 +36,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(accessToken)) {
             try {
                 if (jwtUtil.validateToken(accessToken)) {
-                    setAuthentication(accessToken);
+                    String username = jwtUtil.getUsernameFromToken(accessToken);
+                    setAuthentication(username);
                 }
             } catch (ExpiredJwtException e) {
                 handleExpiredAccessToken(req, res, e);
