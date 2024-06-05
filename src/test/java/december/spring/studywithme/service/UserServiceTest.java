@@ -1,15 +1,13 @@
 package december.spring.studywithme.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import december.spring.studywithme.dto.PasswordRequestDTO;
 import december.spring.studywithme.dto.UserRequestDTO;
@@ -24,7 +22,7 @@ class UserServiceTest {
 	UserService userService;
 	@Autowired
 	private UserRepository userRepository;
-
+	
 	void createUsers() {
 		UserRequestDTO user1 = new UserRequestDTO();
 		user1.setUserId("heesue12345");
