@@ -51,4 +51,15 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleUserException(UserException e) {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
+
+	@ExceptionHandler(PostException.class)
+	public ResponseEntity<String> handlePostException(PostException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(NoPostException.class)
+	public ResponseEntity<String> handleNoPostException(NoPostException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+	}
+
 }

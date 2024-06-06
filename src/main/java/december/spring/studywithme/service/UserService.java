@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import december.spring.studywithme.dto.*;
-import org.springframework.security.authentication.AuthenticationManager;
+import december.spring.studywithme.jwt.JwtUtil;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+  	private final JwtUtil jwtUtil;
 
     /**
      * 1. 회원가입
@@ -127,6 +128,4 @@ public class UserService {
         userRepository.save(user);
         return new UserResponseDTO(user);
     }
-
-
 }

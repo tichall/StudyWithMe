@@ -1,6 +1,10 @@
 package december.spring.studywithme.controller;
 
+
 import december.spring.studywithme.dto.*;
+import december.spring.studywithme.jwt.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
-    private AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     /**
      * 1. 회원가입
