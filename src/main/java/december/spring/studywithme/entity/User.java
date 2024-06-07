@@ -77,9 +77,8 @@ public class User extends Timestamped {
         this.refreshToken = refreshToken;
     }
 
-    public void editProfile(String name, String password, String introduce) {
+    public void editProfile(String name, String introduce) {
         this.name = name;
         this.introduce = introduce;
-        this.password = password;
     }
 }

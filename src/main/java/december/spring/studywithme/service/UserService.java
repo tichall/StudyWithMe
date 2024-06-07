@@ -59,7 +59,7 @@ public class UserService {
         checkUserType(user.getUserType());
 
         //비밀번호 일치 확인
-        if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
             throw new UserException("비밀번호가 일치하지 않습니다.");
         }
 
@@ -122,15 +122,14 @@ public class UserService {
     @Transactional
     public UserResponseDTO updateProfile(UserProfileUpateRequestDTO requestDTO, User user) {
 
-        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(requestDTO.getCurrentPasdsword(), user.getPassword())) {
             throw new UserException("비밀번호가 일치하지 않습니다.");
         }
-        if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
-            throw new UserException("새로운 비밀번호와 기존 비밀번호가 동일합니다.");
-        }
 
-        user.editProfile(requestDTO.getName(), passwordEncoder.encode(requestDTO.getNewPassword()), requestDTO.getIntroduce());
+        String editName = requestDTO.getName() != null ? requestDTO.getName() : user.getName();
+        String editIntroduce = requestDTO.getIntroduce() != null ? requestDTO.getIntroduce() : user.getIntroduce();
 
+        user.editProfile(editName,editIntroduce);
         userRepository.save(user);
         return new UserResponseDTO(user);
     }

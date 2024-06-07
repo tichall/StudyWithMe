@@ -3,6 +3,7 @@ package december.spring.studywithme.dto;
 import java.time.LocalDateTime;
 
 import december.spring.studywithme.entity.User;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ public class UserResponseDTO {
 	private String userId;
 	private String name;
 	private String email;
+	private String introduce;
 	private LocalDateTime createAt;
 	private LocalDateTime modifyAt;
 	
@@ -21,6 +23,7 @@ public class UserResponseDTO {
 		this.userId = user.getUserId();
 		this.name = user.getName();
 		this.email = user.getEmail();
+		this.introduce = user.getIntroduce();
 		this.createAt = user.getCreateAt();
 		this.modifyAt = user.getModifyAt();
 	}

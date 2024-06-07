@@ -2,6 +2,7 @@ package december.spring.studywithme.controller;
 
 
 import december.spring.studywithme.dto.*;
+import december.spring.studywithme.exception.UserException;
 import december.spring.studywithme.jwt.JwtUtil;
 import december.spring.studywithme.security.UserDetailsImpl;
 import december.spring.studywithme.service.UserService;
@@ -89,12 +90,9 @@ public class UserController {
                 .build());
     }
 
-    @PutMapping()
-    public ResponseEntity<ResponseMessage<UserResponseDTO>> updateUser(@RequestBody UserProfileUpateRequestDTO requestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        // 현재 사용자의 인증 정보 가져오기
-            // 사용자 정보 수정
+    @PutMapping("/mypage")
+    public ResponseEntity<ResponseMessage<UserResponseDTO>> updateUser(@Valid @RequestBody UserProfileUpateRequestDTO requestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         UserResponseDTO userResponseDTO = userService.updateProfile(requestDTO, userDetails.getUser());
-
         ResponseMessage<UserResponseDTO> responseMessage = ResponseMessage.<UserResponseDTO>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("프로필 수정이 완료되었습니다.")
@@ -103,3 +101,14 @@ public class UserController {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 }
+//
+//    @PutMapping("/password")
+//
+//    String editPassword = requestDTO.getNewPassword() != null ? passwordEncoder.encode(requestDTO.getNewPassword()) : user.getPassword();
+//
+//            if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
+//        throw new UserException("비밀번호가 일치하지 않습니다.");
+//    }
+//        if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
+//        throw new UserException("새로운 비밀번호와 기존 비밀번호가 동일합니다.");
+//}
