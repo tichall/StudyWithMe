@@ -25,7 +25,7 @@ public class LikeService {
             throw new LikeException("본인이 작성한 게시글에는 좋아요를 남길 수 없습니다.");
         }
 
-        boolean result = applyLike(user, ContentsType.POST, post.getId());
+        boolean result = toggleLike(user, post.getId(), ContentsType.POST);
         updateLikes(post);
         return result;
     }
@@ -40,13 +40,15 @@ public class LikeService {
             throw new LikeException("본인이 작성한 댓글에는 좋아요를 남길 수 없습니다.");
         }
 
-        boolean result = applyLike(user, ContentsType.COMMENT, comment.getId());
+        boolean result = toggleLike(user, comment.getId(), ContentsType.COMMENT);
         updateLikes(comment);
         return result;
     }
 
-    // 좋아요 DB 저장
-    public boolean applyLike(User user, ContentsType contentsType, Long targetId) {
+    /**
+     * 좋아요 DB 업데이트
+     */
+    public boolean toggleLike(User user, Long targetId, ContentsType contentsType) {
         Like like = likeRepository.findByUserAndTargetIdAndContentsType(user, targetId, contentsType);
 
         //like 객체 업데이트
@@ -70,13 +72,11 @@ public class LikeService {
      */
     private void updateLikes(Post post) {
         Long countLikes = likeRepository.countByTargetIdAndContentsTypeAndIsLike(post.getId(), ContentsType.POST);
-
         post.updatePostLikes(countLikes);
     }
 
     private void updateLikes(Comment comment) {
         Long countLikes = likeRepository.countByTargetIdAndContentsTypeAndIsLike(comment.getId(), ContentsType.COMMENT);
-
         comment.updateCommentLikes(countLikes);
     }
 }
