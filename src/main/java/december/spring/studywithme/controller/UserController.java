@@ -77,5 +77,4 @@ public class UserController {
 			.data(userDetails.getUser().getUserId())
 			.build());
 	}
-
 }
