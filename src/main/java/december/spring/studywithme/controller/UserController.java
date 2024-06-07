@@ -88,6 +88,14 @@ public class UserController {
                 .data(userInfoResponseDTO)
                 .build());
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseMessage<UserResponseDTO>> getProfileById(@PathVariable Long id) {
+        UserResponseDTO userResponseDTO = userService.inquiryUserById(id);
+        return ResponseEntity.ok(ResponseMessage.<UserResponseDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .data(userResponseDTO)
+                .build());
+    }
 
     @PutMapping()
     public ResponseEntity<ResponseMessage<UserResponseDTO>> updateUser(@RequestBody UserProfileUpateRequestDTO requestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
