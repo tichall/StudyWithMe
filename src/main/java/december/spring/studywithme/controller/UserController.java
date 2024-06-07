@@ -3,23 +3,14 @@ package december.spring.studywithme.controller;
 
 import december.spring.studywithme.dto.*;
 import december.spring.studywithme.jwt.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
 import december.spring.studywithme.security.UserDetailsImpl;
 import december.spring.studywithme.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -109,8 +100,6 @@ public class UserController {
                 .message("프로필 수정이 완료되었습니다.")
                 .data(userResponseDTO)
                 .build();
-
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-
     }
 }
