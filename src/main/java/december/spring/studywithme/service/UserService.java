@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-  	private final JwtUtil jwtUtil;
 
     /**
      * 1. 회원가입
@@ -32,6 +31,9 @@ public class UserService {
         //아이디 유효성 검사
         validateUserId(requestDTO.getUserId());
 
+        //이메일 유효성 검사
+        validateUserEmail(requestDTO.getEmail());
+        
         //비밀번호 암호화
         String password = passwordEncoder.encode(requestDTO.getPassword());
 
@@ -77,6 +79,16 @@ public class UserService {
         Optional<User> findUser = userRepository.findByUserId(id);
         if (findUser.isPresent()) {
             throw new UserException("중복된 id 입니다.");
+        }
+    }
+    
+    /**
+     * 이메일 유효성 검사
+     */
+    private void validateUserEmail(String email) {
+        Optional<User> findUser = userRepository.findByEmail(email);
+        if(findUser.isPresent()) {
+            throw new UserException("중복된 Email 입니다.");
         }
     }
 
