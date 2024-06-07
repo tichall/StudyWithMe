@@ -29,5 +29,4 @@ public class UserRequestDTO {
 	private String email;
 	
 	private String introduce;
-
 }
