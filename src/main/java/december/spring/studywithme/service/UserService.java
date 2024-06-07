@@ -42,7 +42,7 @@ public class UserService {
                 .password(password)
                 .name(requestDTO.getName())
                 .email(requestDTO.getEmail())
-                .userType(UserType.ACTIVE)
+                .userType(UserType.UNVERIFIED)
                 .introduce(requestDTO.getIntroduce())
                 .statusChangedAt(LocalDateTime.now())
                 .build();
@@ -51,7 +51,7 @@ public class UserService {
 
         return new UserResponseDTO(saveUser);
     }
-
+    
     /**
      * 2. 회원탈퇴
      */
@@ -71,7 +71,7 @@ public class UserService {
 
         return user.getUserId();
     }
-
+    
     /**
      * 아이디 유효성 검사
      */
@@ -139,5 +139,14 @@ public class UserService {
 
         userRepository.save(user);
         return new UserResponseDTO(user);
+    }
+    
+    /**
+     * 인증 회원으로 전환
+     */
+    @Transactional
+    public void updateUserActive(User user) {
+        user.ActiveUser();
+        userRepository.save(user);
     }
 }
