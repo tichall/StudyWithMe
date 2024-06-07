@@ -22,8 +22,6 @@ public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     // 리프레시 헤더 값
     public static final String REFRESH_HEADER = "RefreshToken";
-    // 사용자 권한
-    public static final String AUTHORIZATION_KEY = "aud";
     // Token 식별자
     public static final String BEAR = "Bearer ";
     // 토큰 만료시간 (30분)
@@ -31,7 +29,7 @@ public class JwtUtil {
     // 리프레시 토큰 만료시간 (7일)
     private static final long REFRESH_TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;
     //로그아웃 토큰 블랙리스트
-    private Set<String> tokenBlacklist = ConcurrentHashMap.newKeySet();
+    private final Set<String> tokenBlacklist = ConcurrentHashMap.newKeySet();
 
     // JWT secret key
     @Value("${jwt.secret.key}")
@@ -111,16 +109,20 @@ public class JwtUtil {
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.", e);
+            throw e;
         } catch (ExpiredJwtException e) {
             log.error("Expired JWT token, 만료된 JWT token 입니다.", e);
+            throw e;
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.", e);
+            throw e;
         } catch (IllegalArgumentException e) {
             log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.", e);
+            throw e;
         } catch (Exception e){
             log.error("잘못되었습니다.", e);
+            throw e;
         }
-        return false;
     }
 
     // 토큰에서 username 가져오기

@@ -62,4 +62,9 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
 	}
 
+	@ExceptionHandler(LikeException.class)
+	public ResponseEntity<String> handleLikeException(LikeException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
 }
