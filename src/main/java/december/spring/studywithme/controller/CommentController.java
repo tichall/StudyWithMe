@@ -51,4 +51,19 @@ public class CommentController {
                 .body(responseMessage);
     }
 
+    @GetMapping("/{commentId}")
+    public ResponseEntity<ResponseMessage<CommentResponseDto>> getComment(@PathVariable Long postId, @PathVariable Long commentId) {
+        CommentResponseDto responseDto = commentService.getComment(postId, commentId);
+
+        ResponseMessage<CommentResponseDto> responseMessage = ResponseMessage.<CommentResponseDto>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("선택한 댓글 조회가 완료되었습니다.")
+                .data(responseDto)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseMessage);
+    }
+
 }

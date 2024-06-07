@@ -57,8 +57,8 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(NoPostException.class)
-	public ResponseEntity<String> handleNoPostException(NoPostException e) {
+	@ExceptionHandler(NoContentException.class)
+	public ResponseEntity<String> handleNoPostException(NoContentException e) {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
 	}
 
@@ -67,9 +67,9 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(NoCommentException.class)
-	public ResponseEntity<String> handleCommentException(NoCommentException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+	@ExceptionHandler(CommentException.class)
+	public ResponseEntity<String> handleCommentException(CommentException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
 }

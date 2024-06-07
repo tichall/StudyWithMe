@@ -4,7 +4,8 @@ import december.spring.studywithme.dto.CommentRequestDto;
 import december.spring.studywithme.dto.CommentResponseDto;
 import december.spring.studywithme.entity.Comment;
 import december.spring.studywithme.entity.Post;
-import december.spring.studywithme.exception.NoCommentException;
+import december.spring.studywithme.exception.CommentException;
+import december.spring.studywithme.exception.NoContentException;
 import december.spring.studywithme.repository.CommentRepository;
 import december.spring.studywithme.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +36,21 @@ public class CommentService {
 
     public List<CommentResponseDto> getAllComments(Long postId) {
         Post post = postService.getValidatePost(postId);
-        List<Comment> commentList = commentRepository.findAllByPostId(post.getId());
+        List<Comment> commentList = post.getCommentList();
 
         if (commentList.isEmpty()) {
-            throw new NoCommentException("가장 먼저 댓글을 작성해보세요!");
+            throw new NoContentException("가장 먼저 댓글을 작성해보세요!");
         }
 
         return commentList.stream().map(CommentResponseDto::new).toList();
     }
 
+    public CommentResponseDto getComment(Long postId, Long commentId) {
+        Post post = postService.getValidatePost(postId);
+
+        Comment comment = commentRepository.findByPostIdAndId(post.getId(), commentId).orElseThrow(() ->
+                        new CommentException("게시글에 해당 댓글이 존재하지 않습니다."));
+
+        return new CommentResponseDto(comment);
+    }
 }

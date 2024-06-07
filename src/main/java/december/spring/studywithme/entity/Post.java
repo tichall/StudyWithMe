@@ -28,8 +28,8 @@ public class Post extends Timestamped{
 	@Column(nullable = false)
 	private String contents;
 
-//	@OneToMany(mappedBy = "post", orphanRemoval = true)
-//	private List<Comment> commentList;
+	@OneToMany(mappedBy = "post", orphanRemoval = true)
+	private List<Comment> commentList;
 	
 	@Builder
 	public Post(User user, String title, String contents)  {
