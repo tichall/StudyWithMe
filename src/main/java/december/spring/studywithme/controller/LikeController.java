@@ -19,7 +19,9 @@ public class LikeController {
 
     private final LikeService likeService;
 
-    //게시글 좋아요 / 취소
+	/**
+	 * 게시글 좋아요 등록 / 취소
+	 */
 	@PostMapping("/{postId}/like")
 	public ResponseEntity<ResponseMessage<Long>> likePost(@PathVariable Long postId
 			, @AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -40,7 +42,9 @@ public class LikeController {
 		}
 	}
 
-    //댓글 좋아요 / 취소
+	/**
+	 * 댓글 좋아요 등록 / 취소
+	 */
     @PostMapping("/{postId}/comments/{commentId}/like")
     public ResponseEntity<ResponseMessage<Long>> likeComment(@PathVariable Long postId, @PathVariable Long commentId
             , @AuthenticationPrincipal UserDetailsImpl userDetails){
