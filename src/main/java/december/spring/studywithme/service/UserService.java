@@ -112,6 +112,7 @@ public class UserService {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserException("해당 유저를 찾을 수 없습니다."));
         return new UserProfileResponseDTO(user);
     }
+
     public UserResponseDTO inquiryUserById(Long Id) { // 유저 아이디를 통한 조회
         User user = userRepository.findById(Id)
                 .orElseThrow(() -> new UserException("해당 유저를 찾을 수 없습니다."));
