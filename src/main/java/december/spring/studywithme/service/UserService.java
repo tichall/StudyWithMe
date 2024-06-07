@@ -128,6 +128,11 @@ public class UserService {
 		jwtUtil.invalidateToken(refreshToken);
 	}
 
+    public UserProfileResponseDTO inquiryUser(String userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserException("해당 유저를 찾을 수 없습니다."));
+        return new UserProfileResponseDTO(user);
+    }
+
     @Transactional
     public UserResponseDTO updateProfile(UserProfileUpateRequestDTO requestDTO, User user) {
 
@@ -152,4 +157,6 @@ public class UserService {
         user.ActiveUser();
         userRepository.save(user);
     }
+
+
 }
