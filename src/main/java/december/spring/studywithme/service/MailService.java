@@ -23,7 +23,7 @@ public class MailService {
 	//이메일 작성 폼
 	public String sendEmailForCertification(String email) throws NoSuchAlgorithmException, MessagingException {
 		String certificationNumber = createCertificationNumber();
-		String content = String.format("인증 번호 : " + certificationNumber + "\n링크를 3분 이내에 클릭해주세요.");
+		String content = String.format("인증 번호 : " + certificationNumber + "\n인증코드를 3분 이내에 입력해주세요.");
 		certificationNumberRepository.saveCertificationNumber(email, certificationNumber);
 		sendMail(email, content);
 		return email;
