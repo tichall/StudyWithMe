@@ -3,7 +3,6 @@ package december.spring.studywithme.controller;
 import december.spring.studywithme.dto.PostRequestDto;
 import december.spring.studywithme.dto.PostResponseDto;
 import december.spring.studywithme.dto.ResponseMessage;
-import december.spring.studywithme.entity.Post;
 import december.spring.studywithme.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,9 @@ import java.util.List;
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
+
 	private final PostService postService;
+
 	@PostMapping
 	public ResponseEntity<ResponseMessage<PostResponseDto>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PostRequestDto request) {
 		PostResponseDto postResponseDto = postService.createPost(userDetails, request);
@@ -85,5 +86,47 @@ public class PostController {
 				.status(HttpStatus.OK)
 				.body(responseMessage);
 	}
+
+	//게시글 좋아요 / 취소
+	@PostMapping("{postId}/like")
+	public ResponseEntity<ResponseMessage<Long>> likePost(@PathVariable Long postId
+			, @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+		if(postService.likePost(postId, userDetails.getUser())){
+			return ResponseEntity.ok(ResponseMessage.<Long>builder()
+					.statusCode(HttpStatus.OK.value())
+					.message("좋아요. 등록")
+					.data(postId)
+					.build());
+		}
+		else{
+			return ResponseEntity.ok(ResponseMessage.<Long>builder()
+					.statusCode(HttpStatus.OK.value())
+					.message("좋아요. 취소")
+					.data(postId)
+					.build());
+		}
+	}
+
+	//댓글 좋아요 / 취소
+//    @PostMapping("{postId}/comments/{commentId}/like")
+//    public ResponseEntity<ResponseMessage<Long>> likeComment(@PathVariable Long commentId
+//            , @AuthenticationPrincipal UserDetailsImpl userDetails){
+//
+//        if(postService.likeComment(commentId, userDetails.getUser())){
+//            return ResponseEntity.ok(ResponseMessage.<Long>builder()
+//                    .statusCode(HttpStatus.OK.value())
+//                    .message("좋아요. 등록")
+//					.data(commentId)
+//                    .build());
+//        }
+//        else{
+//            return ResponseEntity.ok(ResponseMessage.<Long>builder()
+//                    .statusCode(HttpStatus.OK.value())
+//                    .message("좋아요. 취소")
+//					.data(commentId)
+//                    .build());
+//        }
+//    }
 
 }

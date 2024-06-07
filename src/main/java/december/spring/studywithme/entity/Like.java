@@ -19,9 +19,8 @@ public class Like extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @Column(nullable = false)
+    private Long targetId;
 
     @Column(nullable = false)
     private boolean isLike;
@@ -31,9 +30,9 @@ public class Like extends Timestamped {
     private ContentsType contentsType;
 
     @Builder
-    public Like(User user, Post post, ContentsType contentsType, boolean isLike) {
+    public Like(User user, Long targetId, ContentsType contentsType, boolean isLike) {
         this.user = user;
-        this.post = post;
+        this.targetId = targetId;
         this.contentsType = contentsType;
         this.isLike = isLike;
     }
