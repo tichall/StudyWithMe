@@ -1,5 +1,6 @@
 package december.spring.studywithme.entity;
 
+import december.spring.studywithme.dto.CommentRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,16 +26,15 @@ public class Comment extends Timestamped {
     @Column(nullable = false)
     private String contents;
 
-    @Column
-    private Long likes;
 
     @Builder
     public Comment(Post post, User user, String contents) {
         this.post = post;
         this.user = user;
         this.contents = contents;
-        this.likes = 0L;
     }
 
-
+    public void update(CommentRequestDto requestDto) {
+        this.contents = requestDto.getContents();
+    }
 }

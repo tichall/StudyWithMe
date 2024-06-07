@@ -21,6 +21,9 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;
 
+    /**
+     * 댓글 등록
+     */
     @Transactional
     public CommentResponseDto createComment(UserDetailsImpl userDetails, Long postId, CommentRequestDto requestDto) {
         Post post = postService.getValidatePost(postId);
@@ -34,6 +37,9 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
+    /**
+     * 전체 댓글 조회
+     */
     public List<CommentResponseDto> getAllComments(Long postId) {
         Post post = postService.getValidatePost(postId);
         List<Comment> commentList = post.getCommentList();
@@ -45,12 +51,47 @@ public class CommentService {
         return commentList.stream().map(CommentResponseDto::new).toList();
     }
 
+    /**
+     * 댓글 단일 조회
+     */
     public CommentResponseDto getComment(Long postId, Long commentId) {
         Post post = postService.getValidatePost(postId);
 
-        Comment comment = commentRepository.findByPostIdAndId(post.getId(), commentId).orElseThrow(() ->
-                        new CommentException("게시글에 해당 댓글이 존재하지 않습니다."));
+        Comment comment = getValidateComment(post.getId(), commentId);
 
         return new CommentResponseDto(comment);
+    }
+
+    /**
+     * 댓글 수정
+     */
+    @Transactional
+    public CommentResponseDto updateComment(UserDetailsImpl userDetails, Long postId, Long commentId, CommentRequestDto requestDto) {
+        Post post = postService.getValidatePost(postId);
+        Comment comment = getValidateComment(post.getId(), commentId);
+        checkCommentWriter(comment, userDetails);
+
+        comment.update(requestDto);
+        commentRepository.save(comment);
+        commentRepository.flush();
+
+        return new CommentResponseDto(comment);
+    }
+
+    /**
+     * 댓글 존재 여부 확인
+     */
+    public Comment getValidateComment(Long postId, Long commentId) {
+        return commentRepository.findByPostIdAndId(postId, commentId).orElseThrow(() ->
+                new CommentException("게시글에 해당 댓글이 존재하지 않습니다."));
+    }
+
+    /**
+     * 댓글 작성자 확인
+     */
+    private void checkCommentWriter(Comment comment, UserDetailsImpl userDetails) {
+        if (!comment.getUser().getUserId().equals(userDetails.getUsername())) {
+            throw new CommentException("작성자가 아니므로, 접근이 제한됩니다.");
+        }
     }
 }

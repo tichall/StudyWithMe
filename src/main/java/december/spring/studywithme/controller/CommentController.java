@@ -66,4 +66,19 @@ public class CommentController {
                 .body(responseMessage);
     }
 
+    @PutMapping("/{commentId}")
+    public ResponseEntity<ResponseMessage<CommentResponseDto>> updateComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long postId, @PathVariable Long commentId, @Valid @RequestBody CommentRequestDto requestDto) {
+        CommentResponseDto responseDto = commentService.updateComment(userDetails, postId, commentId, requestDto);
+
+        ResponseMessage<CommentResponseDto> responseMessage = ResponseMessage.<CommentResponseDto>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("댓글 수정이 완료되었습니다.")
+                .data(responseDto)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseMessage);
+    }
+
 }
