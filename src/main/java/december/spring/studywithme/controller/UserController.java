@@ -52,18 +52,6 @@ public class UserController {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
-    //로그아웃
-    @GetMapping("/logout")
-    public ResponseEntity<ResponseMessage> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.logout(userDetails.getUser());
-
-        return ResponseEntity.ok(ResponseMessage.builder()
-                .statusCode(HttpStatus.OK.value())
-                .message("로그아웃이 완료되었습니다.")
-                .build());
-    }
-
-
     /**
      * 프로필 조회 (개인)
      * 인증된 사용자의 정보를 조회하여 반환
@@ -111,4 +99,21 @@ public class UserController {
                 .build();
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
+
+	/**
+	 * 로그아웃
+	 */
+	@GetMapping("/logout")
+	public ResponseEntity<ResponseMessage<String>> logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request){
+
+		String accessToken = jwtUtil.getJwtFromHeader(request);
+		String refreshToken = jwtUtil.getJwtRefreshTokenFromHeader(request);
+		userService.logout(userDetails.getUser(), accessToken, refreshToken);
+
+		return ResponseEntity.ok(ResponseMessage.<String>builder()
+			.statusCode(HttpStatus.OK.value())
+			.message("로그아웃이 완료되었습니다.")
+			.data(userDetails.getUser().getUserId())
+			.build());
+	}
 }

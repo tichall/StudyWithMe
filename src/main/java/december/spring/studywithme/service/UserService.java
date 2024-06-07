@@ -11,6 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import december.spring.studywithme.dto.PasswordRequestDTO;
+import december.spring.studywithme.dto.UserRequestDTO;
+import december.spring.studywithme.dto.UserResponseDTO;
 import december.spring.studywithme.entity.User;
 import december.spring.studywithme.entity.UserType;
 import december.spring.studywithme.exception.UserException;
@@ -33,15 +36,17 @@ public class UserService {
         //아이디 유효성 검사
         validateUserId(requestDTO.getUserId());
 
+        //이메일 유효성 검사
+        validateUserEmail(requestDTO.getEmail());
+
         //비밀번호 암호화
         String password = passwordEncoder.encode(requestDTO.getPassword());
-
         User user = User.builder()
                 .userId(requestDTO.getUserId())
                 .password(password)
                 .name(requestDTO.getName())
                 .email(requestDTO.getEmail())
-                .userType(UserType.ACTIVE)
+                .userType(UserType.UNVERIFIED)
                 .introduce(requestDTO.getIntroduce())
                 .statusChangedAt(LocalDateTime.now())
                 .build();
@@ -82,6 +87,16 @@ public class UserService {
     }
 
     /**
+     * 이메일 유효성 검사
+     */
+    private void validateUserEmail(String email) {
+        Optional<User> findUser = userRepository.findByEmail(email);
+        if(findUser.isPresent()) {
+            throw new UserException("중복된 Email 입니다.");
+        }
+    }
+
+    /**
      * 유저 타입 검사
      */
     private void checkUserType(UserType userType) {
@@ -90,24 +105,29 @@ public class UserService {
         }
     }
 
-    //로그아웃
+    /**
+     *로그아웃
+     */
     @Transactional
-    public void logout(User user) {
+    public void logout(User user, String accessToken, String refreshToken) {
 
-        if (user == null) {
-            throw new UserException("로그인되어 있는 유저가 아닙니다.");
-        }
+		if(user==null){
+			throw new UserException("로그인되어 있는 유저가 아닙니다.");
+		}
 
-        if (user.getUserType().equals(UserType.DEACTIVATED)) {
-            throw new UserException("탈퇴한 회원입니다.");
-        }
+		if(user.getUserType().equals(UserType.DEACTIVATED)){
+			throw new UserException("탈퇴한 회원입니다.");
+		}
 
-        User existingUser = userRepository.findByUserId(user.getUserId())
-                .orElseThrow(() -> new UserException("해당 유저가 존재하지 않습니다."));
+		User existingUser = userRepository.findByUserId(user.getUserId())
+						.orElseThrow(() -> new UserException("해당 유저가 존재하지 않습니다."));
 
-        existingUser.refreshTokenReset("");
-        userRepository.save(existingUser);
-    }
+		existingUser.refreshTokenReset("");
+		userRepository.save(existingUser);
+
+		jwtUtil.invalidateToken(accessToken);
+		jwtUtil.invalidateToken(refreshToken);
+	}
 
     public UserProfileResponseDTO inquiryUser(String userId) { // 유저 아이디로 유저 조회
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserException("해당 유저를 찾을 수 없습니다."));
@@ -153,4 +173,15 @@ public class UserService {
 
         return new UserResponseDTO(user);
     }
+
+    /**
+     * 인증 회원으로 전환
+     */
+    @Transactional
+    public void updateUserActive(User user) {
+        user.ActiveUser();
+        userRepository.save(user);
+    }
+
+
 }
