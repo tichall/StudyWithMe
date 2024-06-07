@@ -47,3 +47,4 @@ public class Post extends Timestamped{
 		this.contents = requestDto.getContents();
 	}
 }
+
