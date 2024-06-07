@@ -3,6 +3,7 @@ package december.spring.studywithme.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import december.spring.studywithme.dto.*;
 import december.spring.studywithme.jwt.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -113,4 +114,19 @@ public class UserService {
 		jwtUtil.invalidateToken(refreshToken);
 	}
 
+    @Transactional
+    public UserResponseDTO updateProfile(UserProfileUpateRequestDTO requestDTO, User user) {
+
+        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
+            throw new UserException("비밀번호가 일치하지 않습니다.");
+        }
+        if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
+            throw new UserException("새로운 비밀번호와 기존 비밀번호가 동일합니다.");
+        }
+
+        user.editProfile(requestDTO.getName(), passwordEncoder.encode(requestDTO.getNewPassword()), requestDTO.getIntroduce());
+
+        userRepository.save(user);
+        return new UserResponseDTO(user);
+    }
 }
