@@ -45,6 +45,7 @@ public class User extends Timestamped {
 
     private String introduce;
 
+
     @Enumerated(value = EnumType.STRING)
     private UserType userType;
 

@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     /**
      * 1. 회원가입
@@ -39,7 +40,6 @@ public class UserService {
 
         //비밀번호 암호화
         String password = passwordEncoder.encode(requestDTO.getPassword());
-
         User user = User.builder()
                 .userId(requestDTO.getUserId())
                 .password(password)
@@ -104,9 +104,11 @@ public class UserService {
         }
     }
 
-    //로그아웃
+    /**
+     *로그아웃
+     */
     @Transactional
-    public void logout(User user) {
+    public void logout(User user, String accessToken, String refreshToken) {
 
 		if(user==null){
 			throw new UserException("로그인되어 있는 유저가 아닙니다.");
