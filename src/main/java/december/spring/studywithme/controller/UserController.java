@@ -88,6 +88,7 @@ public class UserController {
                 .data(userInfoResponseDTO)
                 .build());
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<ResponseMessage<UserResponseDTO>> getProfileById(@PathVariable Long id) {
         UserResponseDTO userResponseDTO = userService.inquiryUserById(id);
