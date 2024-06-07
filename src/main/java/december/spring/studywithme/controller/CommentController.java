@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/posts/{postId}/comments")
 @RequiredArgsConstructor
@@ -32,6 +34,21 @@ public class CommentController {
                 .status(HttpStatus.CREATED)
                 .body(responseMessage);
 
+    }
+
+    @GetMapping
+    public ResponseEntity<ResponseMessage<List<CommentResponseDto>>> getAllComments(@PathVariable Long postId) {
+        List<CommentResponseDto> responseDtoList = commentService.getAllComments(postId);
+
+        ResponseMessage<List<CommentResponseDto>> responseMessage = ResponseMessage.<List<CommentResponseDto>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("전체 댓글 조회가 완료되었습니다.")
+                .data(responseDtoList)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseMessage);
     }
 
 }
