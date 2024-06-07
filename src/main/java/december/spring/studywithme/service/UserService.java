@@ -6,6 +6,7 @@ import java.util.Optional;
 import december.spring.studywithme.dto.*;
 import december.spring.studywithme.jwt.JwtUtil;
 
+import december.spring.studywithme.security.UserDetailsImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-  	private final JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     /**
      * 1. 회원가입
@@ -108,29 +109,48 @@ public class UserService {
         userRepository.save(existingUser);
     }
 
-    public UserProfileResponseDTO inquiryUser(String userId) {
+    public UserProfileResponseDTO inquiryUser(String userId) { // 유저 아이디로 유저 조회
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserException("해당 유저를 찾을 수 없습니다."));
         return new UserProfileResponseDTO(user);
     }
 
-    public UserResponseDTO inquiryUserById(Long Id) { // 유저 아이디를 통한 조회
+    public UserResponseDTO inquiryUserById(Long Id) { // pk값으로 유저 조회
         User user = userRepository.findById(Id)
                 .orElseThrow(() -> new UserException("해당 유저를 찾을 수 없습니다."));
         return new UserResponseDTO(user);
     }
 
-    @Transactional
-    public UserResponseDTO updateProfile(UserProfileUpateRequestDTO requestDTO, User user) {
+    @Transactional // 변경할 필드만 수정하고 바꾸지 않은 필드는 기존 데이터를 유지하는 메서드
+    public UserResponseDTO editProfile(UserProfileUpdateRequestDTO requestDTO, User user) {
 
-        if (!passwordEncoder.matches(requestDTO.getCurrentPasdsword(), user.getPassword())) {
+        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
             throw new UserException("비밀번호가 일치하지 않습니다.");
         }
 
         String editName = requestDTO.getName() != null ? requestDTO.getName() : user.getName();
         String editIntroduce = requestDTO.getIntroduce() != null ? requestDTO.getIntroduce() : user.getIntroduce();
 
-        user.editProfile(editName,editIntroduce);
+        user.editProfile(editName, editIntroduce);
         userRepository.save(user);
+        return new UserResponseDTO(user);
+    }
+
+    @Transactional // 비밀번호 변경
+    public UserResponseDTO editPassword(EditPasswordRequestDTO requestDTO, UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+
+        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
+            throw new UserException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
+            throw new UserException("새로운 비밀번호와 기존 비밀번호가 동일합니다.");
+        }
+
+        String editPassword = passwordEncoder.encode(requestDTO.getNewPassword());
+        user.changePassword(editPassword);
+        userRepository.save(user);
+
         return new UserResponseDTO(user);
     }
 }

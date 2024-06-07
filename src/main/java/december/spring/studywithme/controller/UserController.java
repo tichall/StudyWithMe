@@ -2,7 +2,6 @@ package december.spring.studywithme.controller;
 
 
 import december.spring.studywithme.dto.*;
-import december.spring.studywithme.exception.UserException;
 import december.spring.studywithme.jwt.JwtUtil;
 import december.spring.studywithme.security.UserDetailsImpl;
 import december.spring.studywithme.service.UserService;
@@ -81,6 +80,7 @@ public class UserController {
                 .build());
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<ResponseMessage<UserResponseDTO>> getProfileById(@PathVariable Long id) {
         UserResponseDTO userResponseDTO = userService.inquiryUserById(id);
@@ -91,8 +91,8 @@ public class UserController {
     }
 
     @PutMapping("/mypage")
-    public ResponseEntity<ResponseMessage<UserResponseDTO>> updateUser(@Valid @RequestBody UserProfileUpateRequestDTO requestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UserResponseDTO userResponseDTO = userService.updateProfile(requestDTO, userDetails.getUser());
+    public ResponseEntity<ResponseMessage<UserResponseDTO>> updateUser(@Valid @RequestBody UserProfileUpdateRequestDTO requestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserResponseDTO userResponseDTO = userService.editProfile(requestDTO, userDetails.getUser());
         ResponseMessage<UserResponseDTO> responseMessage = ResponseMessage.<UserResponseDTO>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("프로필 수정이 완료되었습니다.")
@@ -100,15 +100,15 @@ public class UserController {
                 .build();
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
+
+    @PutMapping("/password")
+    public ResponseEntity<ResponseMessage<UserResponseDTO>> updatePassword(@Valid @RequestBody EditPasswordRequestDTO requestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserResponseDTO userResponseDTO = userService.editPassword(requestDTO, userDetails);
+        ResponseMessage<UserResponseDTO> responseMessage = ResponseMessage.<UserResponseDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("비밀번호가 변경되었습니다.")
+                .data(userResponseDTO)
+                .build();
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
 }
-//
-//    @PutMapping("/password")
-//
-//    String editPassword = requestDTO.getNewPassword() != null ? passwordEncoder.encode(requestDTO.getNewPassword()) : user.getPassword();
-//
-//            if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
-//        throw new UserException("비밀번호가 일치하지 않습니다.");
-//    }
-//        if (passwordEncoder.matches(requestDTO.getNewPassword(), user.getPassword())) {
-//        throw new UserException("새로운 비밀번호와 기존 비밀번호가 동일합니다.");
-//}
