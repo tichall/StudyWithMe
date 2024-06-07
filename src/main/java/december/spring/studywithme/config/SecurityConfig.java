@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/users/login").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/users/signup").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/posts/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/users/mypage").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/users/{id}").permitAll()
                         .anyRequest().authenticated()
         );
 
