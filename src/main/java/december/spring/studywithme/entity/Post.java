@@ -30,16 +30,24 @@ public class Post extends Timestamped{
 
 	@OneToMany(mappedBy = "post", orphanRemoval = true)
 	private List<Comment> commentList;
+
+	@Column(nullable = false)
+	private Long likes;
 	
 	@Builder
 	public Post(User user, String title, String contents)  {
 		this.user = user;
 		this.title = title;
 		this.contents = contents;
+		this.likes = 0L;
 	}
 
 	public void update(PostRequestDto requestDto) {
 		this.title = requestDto.getTitle();
 		this.contents = requestDto.getContents();
+	}
+
+	public void updatePostLikes(Long likes) {
+		this.likes = likes;
 	}
 }

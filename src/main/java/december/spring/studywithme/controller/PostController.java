@@ -88,25 +88,25 @@ public class PostController {
 	}
 
 	//게시글 좋아요 / 취소
-	@PostMapping("{postId}/like")
-	public ResponseEntity<ResponseMessage<Long>> likePost(@PathVariable Long postId
-			, @AuthenticationPrincipal UserDetailsImpl userDetails){
-
-		if(postService.likePost(postId, userDetails.getUser())){
-			return ResponseEntity.ok(ResponseMessage.<Long>builder()
-					.statusCode(HttpStatus.OK.value())
-					.message("좋아요. 등록")
-					.data(postId)
-					.build());
-		}
-		else{
-			return ResponseEntity.ok(ResponseMessage.<Long>builder()
-					.statusCode(HttpStatus.OK.value())
-					.message("좋아요. 취소")
-					.data(postId)
-					.build());
-		}
-	}
+//	@PostMapping("{postId}/like")
+//	public ResponseEntity<ResponseMessage<Long>> likePost(@PathVariable Long postId
+//			, @AuthenticationPrincipal UserDetailsImpl userDetails){
+//
+//		if(postService.likePost(postId, userDetails.getUser())){
+//			return ResponseEntity.ok(ResponseMessage.<Long>builder()
+//					.statusCode(HttpStatus.OK.value())
+//					.message("좋아요. 등록")
+//					.data(postId)
+//					.build());
+//		}
+//		else{
+//			return ResponseEntity.ok(ResponseMessage.<Long>builder()
+//					.statusCode(HttpStatus.OK.value())
+//					.message("좋아요. 취소")
+//					.data(postId)
+//					.build());
+//		}
+//	}
 
 	//댓글 좋아요 / 취소
 //    @PostMapping("{postId}/comments/{commentId}/like")

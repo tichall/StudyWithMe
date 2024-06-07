@@ -2,15 +2,13 @@ package december.spring.studywithme.service;
 
 import december.spring.studywithme.dto.CommentRequestDto;
 import december.spring.studywithme.dto.CommentResponseDto;
-import december.spring.studywithme.entity.Comment;
-import december.spring.studywithme.entity.ContentsType;
-import december.spring.studywithme.entity.Post;
-import december.spring.studywithme.entity.User;
+import december.spring.studywithme.entity.*;
 import december.spring.studywithme.exception.CommentException;
 import december.spring.studywithme.exception.LikeException;
 import december.spring.studywithme.exception.NoContentException;
 import december.spring.studywithme.exception.PostException;
 import december.spring.studywithme.repository.CommentRepository;
+import december.spring.studywithme.repository.LikeRepository;
 import december.spring.studywithme.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +22,7 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;
+    private final LikeRepository likeRepository;
 
     /**
      * 댓글 등록
@@ -95,6 +94,7 @@ public class CommentService {
         return "[Comment Id : " + comment.getId() + "] : " + comment.getContents();
     }
 
+
     /**
      * 댓글 존재 여부 확인
      */
@@ -102,6 +102,7 @@ public class CommentService {
         return commentRepository.findByPostIdAndId(postId, commentId).orElseThrow(() ->
                 new CommentException("게시글에 해당 댓글이 존재하지 않습니다."));
     }
+
     /**
      * 댓글 작성자 확인
      */
@@ -110,4 +111,28 @@ public class CommentService {
             throw new CommentException("작성자가 아니므로, 접근이 제한됩니다.");
         }
     }
+
+//    public boolean toggleCommentLike(User user, ContentsType contentsType, Long targetId) {
+//        Like like = likeRepository.findByUserAndTargetIdAndContentsType(user, targetId, contentsType);
+//
+//        //like 객체 업데이트
+//        if (like != null) {
+//            like.update(!like.isLike());
+//        } else {
+//            like = Like.builder()
+//                    .user(user)
+//                    .targetId(targetId)
+//                    .contentsType(contentsType)
+//                    .isLike(true)
+//                    .build();
+//            likeRepository.save(like);
+//        }
+//
+//        if (contentsType.equals(ContentsType.POST)) {
+//
+//        } else if (contentsType.equals(ContentsType.COMMENT)) {
+//            Comment comment = commentRepository.findById(targetId)
+//        }
+//        return like.isLike();
+//    }
 }

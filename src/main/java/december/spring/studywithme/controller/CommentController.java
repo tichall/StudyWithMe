@@ -30,9 +30,7 @@ public class CommentController {
                 .data(responseDto)
                 .build();
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(responseMessage);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
 
     }
 
@@ -46,9 +44,7 @@ public class CommentController {
                 .data(responseDtoList)
                 .build();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseMessage);
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
     @GetMapping("/{commentId}")
@@ -61,9 +57,7 @@ public class CommentController {
                 .data(responseDto)
                 .build();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseMessage);
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
     @PutMapping("/{commentId}")
@@ -76,9 +70,7 @@ public class CommentController {
                 .data(responseDto)
                 .build();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseMessage);
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
     @DeleteMapping("/{commentId}")
@@ -91,9 +83,7 @@ public class CommentController {
                 .data(deleteCommentId)
                 .build();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseMessage);
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
 }
