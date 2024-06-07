@@ -81,4 +81,19 @@ public class CommentController {
                 .body(responseMessage);
     }
 
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<ResponseMessage<String>> deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long postId, @PathVariable Long commentId) {
+        String deleteCommentId = commentService.deleteComment(userDetails, postId, commentId);
+
+        ResponseMessage<String> responseMessage = ResponseMessage.<String>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("댓글 삭제가 완료되었습니다.")
+                .data(deleteCommentId)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseMessage);
+    }
+
 }

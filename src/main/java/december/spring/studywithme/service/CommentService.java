@@ -3,9 +3,13 @@ package december.spring.studywithme.service;
 import december.spring.studywithme.dto.CommentRequestDto;
 import december.spring.studywithme.dto.CommentResponseDto;
 import december.spring.studywithme.entity.Comment;
+import december.spring.studywithme.entity.ContentsType;
 import december.spring.studywithme.entity.Post;
+import december.spring.studywithme.entity.User;
 import december.spring.studywithme.exception.CommentException;
+import december.spring.studywithme.exception.LikeException;
 import december.spring.studywithme.exception.NoContentException;
+import december.spring.studywithme.exception.PostException;
 import december.spring.studywithme.repository.CommentRepository;
 import december.spring.studywithme.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -79,13 +83,25 @@ public class CommentService {
     }
 
     /**
+     * 댓글 삭제
+     */
+    @Transactional
+    public String deleteComment(UserDetailsImpl userDetails, Long postId, Long commentId) {
+        Post post = postService.getValidatePost(postId);
+        Comment comment = getValidateComment(post.getId(), commentId);
+        checkCommentWriter(comment, userDetails);
+
+        commentRepository.delete(comment);
+        return "[Comment Id : " + comment.getId() + "] : " + comment.getContents();
+    }
+
+    /**
      * 댓글 존재 여부 확인
      */
     public Comment getValidateComment(Long postId, Long commentId) {
         return commentRepository.findByPostIdAndId(postId, commentId).orElseThrow(() ->
                 new CommentException("게시글에 해당 댓글이 존재하지 않습니다."));
     }
-
     /**
      * 댓글 작성자 확인
      */
