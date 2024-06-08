@@ -13,18 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	
-	/*
-	예시코드입니다.
-	
-	@ExceptionHandler(ScheduleNotFoundException.class)
-	public ResponseEntity<String> handleScheduleNotFoundException(ScheduleNotFoundException e) {
-		log.error("excpetion = {}, message = {}", e.getClass(), e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-	}
-	
-	*/
-	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		
@@ -47,34 +35,9 @@ public class GlobalExceptionHandler {
 	}
 	
 	
-	@ExceptionHandler(UserException.class)
-	public ResponseEntity<String> handleUserException(UserException e) {
+	@ExceptionHandler({UserException.class, PostException.class, EmailException.class,
+			LikeException.class, CommentException.class, NoContentException.class})
+	public ResponseEntity<String> handleNormalException(UserException e) {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
-
-	@ExceptionHandler(PostException.class)
-	public ResponseEntity<String> handlePostException(PostException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-	
-	@ExceptionHandler(EmailException.class)
-	public ResponseEntity<String> handlePostException(EmailException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(NoContentException.class)
-	public ResponseEntity<String> handleNoPostException(NoContentException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
-	}
-
-	@ExceptionHandler(LikeException.class)
-	public ResponseEntity<String> handleLikeException(LikeException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(CommentException.class)
-	public ResponseEntity<String> handleCommentException(CommentException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
 }
