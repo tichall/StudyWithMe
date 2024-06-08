@@ -13,10 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeService {
     private final PostService postService;
     private final CommentService commentService;
-
     private final LikeRepository likeRepository;
 
-    //게시글 좋아요 등록 / 취소
+    /**
+     * 1. 게시글 좋아요 등록 / 취소
+     * @param postId 게시글 ID
+     * @param user 로그인한 사용자 정보
+     * @return 좋아요 등록 / 취소 여부
+     */
     @Transactional
     public boolean likePost(Long postId, User user) {
         Post post = postService.getValidatePost(postId);
@@ -30,7 +34,13 @@ public class LikeService {
         return result;
     }
 
-    // 댓글 좋아요 등록 / 취소
+    /**
+     * 2. 댓글 좋아요 등록 / 취소
+     * @param postId 게시글 ID
+     * @param commentId 댓글 ID
+     * @param user 로그인한 사용자 정보
+     * @return 좋아요 등록 / 취소 여부
+     */
     @Transactional
     public boolean likeComment(Long postId, Long commentId, User user) {
         Post post = postService.getValidatePost(postId);
@@ -46,7 +56,11 @@ public class LikeService {
     }
 
     /**
-     * 좋아요 DB 업데이트
+     * DB에 좋아요 등록
+     * @param user 로그인한 사용자 정보
+     * @param targetId 좋아요 대상 ID
+     * @param contentsType 좋아요 대상 타입
+     * @return 좋아요 등록 여부
      */
     public boolean toggleLike(User user, Long targetId, ContentsType contentsType) {
         Like like = likeRepository.findByUserAndTargetIdAndContentsType(user, targetId, contentsType);
@@ -68,13 +82,18 @@ public class LikeService {
     }
 
     /**
-     * 좋아요 개수 업데이트
+     * 게시글 좋아요 수 업데이트
+     * @param post 게시글
      */
     private void updateLikes(Post post) {
         Long countLikes = likeRepository.countByTargetIdAndContentsTypeAndIsLike(post.getId(), ContentsType.POST);
         post.updatePostLikes(countLikes);
     }
 
+    /**
+     * 댓글 좋아요 수 업데이트
+     * @param comment 댓글
+     */
     private void updateLikes(Comment comment) {
         Long countLikes = likeRepository.countByTargetIdAndContentsTypeAndIsLike(comment.getId(), ContentsType.COMMENT);
         comment.updateCommentLikes(countLikes);
