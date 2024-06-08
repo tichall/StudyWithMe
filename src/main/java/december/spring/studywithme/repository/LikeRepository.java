@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
-
     Like findByUserAndTargetIdAndContentsType(User user, Long targetId, ContentsType contentsType);
 
     @Query(value = "select count(*) from Like like " +

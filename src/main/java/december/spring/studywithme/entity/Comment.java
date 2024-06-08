@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -22,6 +24,9 @@ public class Comment extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "comment", orphanRemoval = true)
+    private List<CommentLike> commentLikeList;
 
     @Column(nullable = false)
     private String contents;
