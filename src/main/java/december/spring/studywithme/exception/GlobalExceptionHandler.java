@@ -40,9 +40,8 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
 	}
 	
-	
 	@ExceptionHandler({UserException.class, PostException.class, EmailException.class,
-			LikeException.class, CommentException.class, NoContentException.class})
+			LikeException.class, CommentException.class})
 	public ResponseEntity<ErrorMessage> handleNormalException(UserException e) {
 
 		ErrorMessage errorMessage = ErrorMessage.builder()
@@ -52,4 +51,10 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
 	}
+	
+	@ExceptionHandler(NoContentException.class)
+	public ResponseEntity<String> handleNoPostException(NoContentException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+	}
+	
 }
