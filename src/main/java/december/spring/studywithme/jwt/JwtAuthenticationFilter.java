@@ -1,4 +1,4 @@
-package december.spring.studywithme.security;
+package december.spring.studywithme.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import december.spring.studywithme.dto.LoginRequestDTO;
@@ -6,6 +6,7 @@ import december.spring.studywithme.dto.ResponseMessage;
 import december.spring.studywithme.entity.User;
 import december.spring.studywithme.jwt.JwtUtil;
 import december.spring.studywithme.repository.UserRepository;
+import december.spring.studywithme.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

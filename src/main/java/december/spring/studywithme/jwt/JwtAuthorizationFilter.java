@@ -1,6 +1,7 @@
-package december.spring.studywithme.security;
+package december.spring.studywithme.jwt;
 
 import december.spring.studywithme.jwt.JwtUtil;
+import december.spring.studywithme.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
