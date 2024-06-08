@@ -62,13 +62,18 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(NoPostException.class)
-	public ResponseEntity<String> handleNoPostException(NoPostException e) {
+	@ExceptionHandler(NoContentException.class)
+	public ResponseEntity<String> handleNoPostException(NoContentException e) {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
 	}
 
 	@ExceptionHandler(LikeException.class)
 	public ResponseEntity<String> handleLikeException(LikeException e) {
+		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(CommentException.class)
+	public ResponseEntity<String> handleCommentException(CommentException e) {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
