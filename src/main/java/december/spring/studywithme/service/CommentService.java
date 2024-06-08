@@ -85,13 +85,12 @@ public class CommentService {
      * 댓글 삭제
      */
     @Transactional
-    public String deleteComment(UserDetailsImpl userDetails, Long postId, Long commentId) {
+    public void deleteComment(UserDetailsImpl userDetails, Long postId, Long commentId) {
         Post post = postService.getValidatePost(postId);
         Comment comment = getValidateComment(post.getId(), commentId);
         checkCommentWriter(comment, userDetails);
 
         commentRepository.delete(comment);
-        return "[Comment Id : " + comment.getId() + "] : " + comment.getContents();
     }
 
 
@@ -111,28 +110,4 @@ public class CommentService {
             throw new CommentException("작성자가 아니므로, 접근이 제한됩니다.");
         }
     }
-
-//    public boolean toggleCommentLike(User user, ContentsType contentsType, Long targetId) {
-//        Like like = likeRepository.findByUserAndTargetIdAndContentsType(user, targetId, contentsType);
-//
-//        //like 객체 업데이트
-//        if (like != null) {
-//            like.update(!like.isLike());
-//        } else {
-//            like = Like.builder()
-//                    .user(user)
-//                    .targetId(targetId)
-//                    .contentsType(contentsType)
-//                    .isLike(true)
-//                    .build();
-//            likeRepository.save(like);
-//        }
-//
-//        if (contentsType.equals(ContentsType.POST)) {
-//
-//        } else if (contentsType.equals(ContentsType.COMMENT)) {
-//            Comment comment = commentRepository.findById(targetId)
-//        }
-//        return like.isLike();
-//    }
 }
