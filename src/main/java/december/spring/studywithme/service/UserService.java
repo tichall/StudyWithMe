@@ -28,7 +28,9 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     /**
-     * 1. 회원가입
+     * 1. 회원 가입
+     * @param requestDTO 회원 가입 요청 데이터
+     * @return UserResponseDTO 회원 가입 결과
      */
     @Transactional
     public UserResponseDTO createUser(UserRequestDTO requestDTO) {
@@ -56,7 +58,20 @@ public class UserService {
     }
 
     /**
-     * 2. 회원탈퇴
+     * 2. 회원 활성화
+     * @param user 활성화할 회원
+     */
+    @Transactional
+    public void updateUserActive(User user) {
+        user.ActiveUser();
+        userRepository.save(user);
+    }
+
+    /**
+     * 3. 회원 탈퇴
+     * @param requestDTO 비밀번호 확인 요청 데이터
+     * @param user 로그인한 사용자의 세부 정보
+     * @return 탈퇴된 회원의 ID
      */
     @Transactional
     public String withdrawUser(PasswordRequestDTO requestDTO, User user) {
@@ -76,36 +91,10 @@ public class UserService {
     }
 
     /**
-     * 아이디 유효성 검사
-     */
-    private void validateUserId(String id) {
-        Optional<User> findUser = userRepository.findByUserId(id);
-        if (findUser.isPresent()) {
-            throw new UserException("중복된 id 입니다.");
-        }
-    }
-
-    /**
-     * 이메일 유효성 검사
-     */
-    private void validateUserEmail(String email) {
-        Optional<User> findUser = userRepository.findByEmail(email);
-        if(findUser.isPresent()) {
-            throw new UserException("중복된 Email 입니다.");
-        }
-    }
-
-    /**
-     * 유저 타입 검사
-     */
-    private void checkUserType(UserType userType) {
-        if (userType.equals(UserType.DEACTIVATED)) {
-            throw new UserException("이미 탈퇴한 회원입니다.");
-        }
-    }
-
-    /**
-     *로그아웃
+     * 4. 로그아웃
+     * @param user 로그인한 사용자의 세부 정보
+     * @param accessToken access token
+     * @param refreshToken refresh token
      */
     @Transactional
     public void logout(User user, String accessToken, String refreshToken) {
@@ -128,11 +117,22 @@ public class UserService {
 		jwtUtil.invalidateToken(refreshToken);
 	}
 
+    /**
+     * 5. 회원 조회
+     * @param userId 조회할 회원의 ID
+     * @return UserProfileResponseDTO 회원 조회 결과
+     */
     public UserProfileResponseDTO inquiryUser(String userId) {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserException("해당 유저를 찾을 수 없습니다."));
         return new UserProfileResponseDTO(user);
     }
 
+    /**
+     * 6. 회원 프로필 수정
+     * @param requestDTO 프로필 수정 요청 데이터
+     * @param user 로그인한 사용자의 세부 정보
+     * @return UserResponseDTO 회원 프로필 수정 결과
+     */
     @Transactional
     public UserResponseDTO updateProfile(UserProfileUpateRequestDTO requestDTO, User user) {
 
@@ -150,13 +150,35 @@ public class UserService {
     }
 
     /**
-     * 인증 회원으로 전환
+     * 아이디 유효성 검사
+     * @param id 아이디
      */
-    @Transactional
-    public void updateUserActive(User user) {
-        user.ActiveUser();
-        userRepository.save(user);
+    private void validateUserId(String id) {
+        Optional<User> findUser = userRepository.findByUserId(id);
+        if (findUser.isPresent()) {
+            throw new UserException("중복된 id 입니다.");
+        }
     }
 
+    /**
+     * 이메일 유효성 검사
+     * @param email 이메일
+     */
+    private void validateUserEmail(String email) {
+        Optional<User> findUser = userRepository.findByEmail(email);
+        if(findUser.isPresent()) {
+            throw new UserException("중복된 Email 입니다.");
+        }
+    }
+
+    /**
+     * 회원 상태 확인
+     * @param userType 회원 상태
+     */
+    private void checkUserType(UserType userType) {
+        if (userType.equals(UserType.DEACTIVATED)) {
+            throw new UserException("이미 탈퇴한 회원입니다.");
+        }
+    }
 
 }
