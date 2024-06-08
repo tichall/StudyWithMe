@@ -3,7 +3,6 @@ package december.spring.studywithme.service;
 import december.spring.studywithme.entity.*;
 import december.spring.studywithme.exception.LikeException;
 import december.spring.studywithme.repository.CommentLikeRepository;
-import december.spring.studywithme.repository.LikeRepository;
 import december.spring.studywithme.repository.PostLikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeService {
     private final PostService postService;
     private final CommentService commentService;
-    private final LikeRepository likeRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentLikeRepository commentLikeRepository;
 
@@ -54,9 +52,8 @@ public class LikeService {
     public boolean postLikeUpdate(User user, Post post){
         PostLike postLike = postLikeRepository.findByUserAndPost(user, post);
 
-        //like 객체 업데이트
-        if (postLike != null) {
-            postLike.update(!postLike.isLike());
+        if(postLike != null){
+            postLike.update();
         } else {
             postLike = PostLike.builder()
                     .user(user)
@@ -65,6 +62,7 @@ public class LikeService {
                     .build();
             postLikeRepository.save(postLike);
         }
+
         return postLike.isLike();
     }
 
@@ -76,7 +74,7 @@ public class LikeService {
 
         //like 객체 업데이트
         if (commentLike != null) {
-            commentLike.update(!commentLike.isLike());
+            commentLike.update();
         } else {
             commentLike = CommentLike.builder()
                     .user(user)

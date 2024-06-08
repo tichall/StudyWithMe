@@ -33,8 +33,8 @@ public class CommentLike extends Timestamped{
         this.isLike = isLike;
     }
 
-    public void update(boolean isLike) {
-        this.isLike = isLike;
+    public void update() {
+        this.isLike = !this.isLike;
     }
 
 }

@@ -2,14 +2,9 @@ package december.spring.studywithme.service;
 
 import december.spring.studywithme.dto.PostRequestDto;
 import december.spring.studywithme.dto.PostResponseDto;
-import december.spring.studywithme.entity.ContentsType;
-import december.spring.studywithme.entity.Like;
 import december.spring.studywithme.entity.Post;
-import december.spring.studywithme.entity.User;
-import december.spring.studywithme.exception.LikeException;
 import december.spring.studywithme.exception.NoContentException;
 import december.spring.studywithme.exception.PostException;
-import december.spring.studywithme.repository.LikeRepository;
 import december.spring.studywithme.security.UserDetailsImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +20,6 @@ import java.util.List;
 public class PostService {
 
 	private final PostRepository postRepository;
-	private final LikeRepository likeRepository;
 
 	@Transactional
 	public PostResponseDto createPost(UserDetailsImpl userDetails, PostRequestDto request) {
