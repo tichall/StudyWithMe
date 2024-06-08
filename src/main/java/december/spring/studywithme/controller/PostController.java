@@ -1,7 +1,7 @@
 package december.spring.studywithme.controller;
 
-import december.spring.studywithme.dto.PostRequestDto;
-import december.spring.studywithme.dto.PostResponseDto;
+import december.spring.studywithme.dto.PostRequestDTO;
+import december.spring.studywithme.dto.PostResponseDTO;
 import december.spring.studywithme.dto.ResponseMessage;
 import december.spring.studywithme.security.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -19,71 +19,110 @@ import java.util.List;
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
-
 	private final PostService postService;
 
+	/**
+	 * 1. 게시글 등록
+	 * @param userDetails 로그인한 사용자의 세부 정보
+	 * @param request 게시글 생성 요청 데이터
+	 * @return ResponseEntity<ResponseMessage<PostResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+	 * 	   - 상태 코드: 게시글이 성공적으로 생성되면 201 (CREATED)
+	 * 	   - 메시지: 게시글 생성 상태를 설명하는 메시지
+	 * 	   - 데이터: 생성된 게시글의 정보를 담고 있는 PostResponseDTO 객체
+	 */
 	@PostMapping
-	public ResponseEntity<ResponseMessage<PostResponseDto>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PostRequestDto request) {
-		PostResponseDto postResponseDto = postService.createPost(userDetails, request);
-		ResponseMessage<PostResponseDto> responseMessage = ResponseMessage.<PostResponseDto>builder()
+	public ResponseEntity<ResponseMessage<PostResponseDTO>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PostRequestDTO request) {
+		PostResponseDTO postResponseDTO = postService.createPost(userDetails, request);
+
+		ResponseMessage<PostResponseDTO> responseMessage = ResponseMessage.<PostResponseDTO>builder()
 				.statusCode(HttpStatus.CREATED.value())
 				.message("게시글 생성이 완료되었습니다.")
-				.data(postResponseDto)
+				.data(postResponseDTO)
 				.build();
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
 	}
 
+	/**
+	 * 2. 단일 게시글 조회
+	 * @param id 게시글의 ID
+	 * @return ResponseEntity<ResponseMessage<PostResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+	 * 	   - 상태 코드: 게시글 조회가 성공적으로 이루어지면 200 (OK)
+	 * 	   - 메시지: 게시글 조회 상태를 설명하는 메시지
+	 * 	   - 데이터: 조회된 게시글의 정보를 담고 있는 PostResponseDTO 객체
+	 */
 	@GetMapping("/{id}")
-	public ResponseEntity<ResponseMessage<PostResponseDto>> getPost(@PathVariable Long id) {
-		PostResponseDto postResponseDto = postService.getPost(id);
-		ResponseMessage<PostResponseDto> responseMessage = ResponseMessage.<PostResponseDto>builder()
+	public ResponseEntity<ResponseMessage<PostResponseDTO>> getPost(@PathVariable Long id) {
+		PostResponseDTO postResponseDTO = postService.getPost(id);
+
+		ResponseMessage<PostResponseDTO> responseMessage = ResponseMessage.<PostResponseDTO>builder()
 				.statusCode(HttpStatus.OK.value())
 				.message("게시글 조회가 완료되었습니다.")
-				.data(postResponseDto)
+				.data(postResponseDTO)
 				.build();
+
 		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
 	}
 
+	/**
+	 * 3. 전체 게시글 조회
+	 * @return ResponseEntity<ResponseMessage<List<PostResponseDTO>>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+	 * 	   - 상태 코드: 게시글 조회가 성공적으로 이루어지면 200 (OK)
+	 * 	   - 메시지: 게시글 조회 상태를 설명하는 메시지
+	 * 	   - 데이터: 조회된 게시글의 정보를 담고 있는 PostResponseDTO 객체의 리스트
+	 */
     @GetMapping
-    public ResponseEntity<ResponseMessage<List<PostResponseDto>>> getAllPost() {
-        List<PostResponseDto> responseDtoList = postService.getAllPost();
-        ResponseMessage<List<PostResponseDto>> responseMessage = ResponseMessage.<List<PostResponseDto>>builder()
+    public ResponseEntity<ResponseMessage<List<PostResponseDTO>>> getAllPost() {
+        List<PostResponseDTO> responseDTOList = postService.getAllPost();
+
+        ResponseMessage<List<PostResponseDTO>> responseMessage = ResponseMessage.<List<PostResponseDTO>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("전체 게시글 조회가 완료되었습니다.")
-                .data(responseDtoList)
+                .data(responseDTOList)
                 .build();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseMessage);
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
+	/**
+	 * 4. 게시글 수정
+	 * @param id 게시글의 ID
+	 * @param userDetails 로그인한 사용자의 세부 정보
+	 * @param requestDto 게시글 수정 요청 데이터
+	 * @return ResponseEntity<ResponseMessage<PostResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+	 */
 	@PutMapping("/{id}")
-	public ResponseEntity<ResponseMessage<PostResponseDto>> updatePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PostRequestDto requestDto) {
-		PostResponseDto responseDto = postService.updatePost(id, userDetails, requestDto);
+	public ResponseEntity<ResponseMessage<PostResponseDTO>> updatePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PostRequestDTO requestDto) {
+		PostResponseDTO responseDTO = postService.updatePost(id, userDetails, requestDto);
 
-		ResponseMessage<PostResponseDto> responseMessage = ResponseMessage.<PostResponseDto>builder()
+		ResponseMessage<PostResponseDTO> responseMessage = ResponseMessage.<PostResponseDTO>builder()
 				.statusCode(HttpStatus.OK.value())
 				.message("게시글 수정이 완료되었습니다.")
-				.data(responseDto)
+				.data(responseDTO)
 				.build();
 
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(responseMessage);
+		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
 	}
 
+	/**
+	 * 5. 게시글 삭제
+	 * @param id 게시글의 ID
+	 * @param userDetails 로그인한 사용자의 세부 정보
+	 * @return ResponseEntity<ResponseMessage<Long>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+	 * 	   - 상태 코드: 게시글 삭제가 성공적으로 이루어지면 200 (OK)
+	 * 	   - 메시지: 게시글 삭제 상태를 설명하는 메시지
+	 * 	   - 데이터: 삭제된 게시글의 ID
+	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ResponseMessage<Void>> deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+	public ResponseEntity<ResponseMessage<Long>> deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		postService.deletePost(id, userDetails);
 
-		ResponseMessage<Void> responseMessage = ResponseMessage.<Void>builder()
+		ResponseMessage<Long> responseMessage = ResponseMessage.<Long>builder()
 				.statusCode(HttpStatus.OK.value())
 				.message("게시글 삭제가 완료되었습니다.")
+				.data(id)
 				.build();
 
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(responseMessage);
+		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
 	}
 }
