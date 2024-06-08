@@ -19,8 +19,14 @@ public class MailService {
 	private final JavaMailSender mailSender;
 	private final CertificationNumberRepository certificationNumberRepository;
 	public static final String MAIL_TITLE_CERTIFICATION = "STUDY WITH ME 이메일 인증";
-	
-	//이메일 작성 폼
+
+	/**
+	 * 1. 이메일 인증 코드 발송
+	 * @param email 이메일 주소
+	 * @return 이메일 주소
+	 * @throws NoSuchAlgorithmException
+	 * @throws MessagingException
+	 */
 	public String sendEmailForCertification(String email) throws NoSuchAlgorithmException, MessagingException {
 		String certificationNumber = createCertificationNumber();
 		String content = String.format("인증 번호 : " + certificationNumber + "\n인증코드를 3분 이내에 입력해주세요.");
@@ -28,8 +34,13 @@ public class MailService {
 		sendMail(email, content);
 		return email;
 	}
-	
-	//이메일 보내기
+
+	/**
+	 * 2. 이메일 발송
+	 * @param email 이메일 주소
+	 * @param content 이메일 내용
+	 * @throws MessagingException
+	 */
 	private void sendMail(String email, String content) throws MessagingException {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
@@ -38,8 +49,12 @@ public class MailService {
 		helper.setText(content);
 		mailSender.send(mimeMessage);
 	}
-	
-	//인증번호 검사
+
+	/**
+	 * 3. 이메일 인증 확인
+	 * @param email 이메일 주소
+	 * @param certificationNumber 인증 번호
+	 */
 	public void verifyEmail(String email, String certificationNumber) {
 		if (! certificationNumberRepository.getCertificationNumber(email).equals(certificationNumber)) {
 			throw new EmailException("인증번호가 일치하지 않습니다.");
@@ -47,8 +62,12 @@ public class MailService {
 		
 		certificationNumberRepository.removeCertificationNumber(email);
 	}
-	
-	//인증번호 만들기
+
+	/**
+	 * 인증 번호 생성
+	 * @return 인증 번호
+	 * @throws NoSuchAlgorithmException
+	 */
 	public String createCertificationNumber() throws NoSuchAlgorithmException {
 		String result;
 		
