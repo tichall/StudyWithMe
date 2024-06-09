@@ -5,6 +5,7 @@ import december.spring.studywithme.dto.*;
 import december.spring.studywithme.jwt.JwtUtil;
 import december.spring.studywithme.security.UserDetailsImpl;
 import december.spring.studywithme.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
