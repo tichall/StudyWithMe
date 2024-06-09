@@ -31,6 +31,9 @@ public class Post extends Timestamped{
 	@OneToMany(mappedBy = "post", orphanRemoval = true)
 	private List<Comment> commentList;
 
+	@OneToMany(mappedBy = "post", orphanRemoval = true)
+	private List<PostLike> postLikeList;
+
 	@Column(nullable = false)
 	private Long likes;
 	
