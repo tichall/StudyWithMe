@@ -129,9 +129,12 @@ public class PostController {
 
 	/**
 	 * 6. 전체 게시글 페이지 조회
-	 * @param page
-	 * @param sortBy
-	 * @return
+	 * @param page 접근할 페이지
+	 * @param sortBy 게시글 정렬 기준
+	 * @return ResponseEntity<ResponseMessage<PostPageResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+	 * 	 * 	   - 상태 코드: 게시글 조회가 성공적으로 이루어지면 200 (OK)
+	 * 	 * 	   - 메시지: 게시글 조회 상태를 설명하는 메시지
+	 * 	 * 	   - 데이터: 조회된 페이지와 게시글의 정보를 담고 있는 PostPageResponseDTO 객체
 	 */
 	@GetMapping("/pages")
 	public ResponseEntity<ResponseMessage<PostPageResponseDTO>> getPostPage(
