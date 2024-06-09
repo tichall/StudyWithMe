@@ -177,6 +177,7 @@ public class UserService {
     /**
      * 인증 회원으로 전환
      */
+
     @Transactional
     public void updateUserActive(User user) {
         user.ActiveUser();
