@@ -135,8 +135,8 @@ public class PostController {
 	 */
 	@GetMapping("/pages")
 	public ResponseEntity<ResponseMessage<PostPageResponseDTO>> getPostPage(
-			@RequestParam("page") Integer page,
-			@RequestParam("sortBy")  String sortBy
+			@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+			@RequestParam(value = "sortBy", required = false, defaultValue = "createdAt")  String sortBy
 	) {
 		PostPageResponseDTO pageResponseDto = postService.getPostPage(page, sortBy);
 
