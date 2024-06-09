@@ -41,8 +41,8 @@ public class GlobalExceptionHandler {
 	}
 	
 	@ExceptionHandler({UserException.class, PostException.class, EmailException.class,
-			LikeException.class, CommentException.class})
-	public ResponseEntity<ErrorMessage> handleNormalException(UserException e) {
+			LikeException.class, CommentException.class, PageException.class})
+	public ResponseEntity<ErrorMessage> handleNormalException(Exception e) {
 
 		ErrorMessage errorMessage = ErrorMessage.builder()
 				.statusCode(HttpStatus.BAD_REQUEST.value())

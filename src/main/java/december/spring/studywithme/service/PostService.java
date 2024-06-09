@@ -1,14 +1,20 @@
 package december.spring.studywithme.service;
 
 
+import december.spring.studywithme.dto.PostPageResponseDTO;
 import december.spring.studywithme.dto.PostRequestDTO;
 import december.spring.studywithme.dto.PostResponseDTO;
 import december.spring.studywithme.entity.Post;
 import december.spring.studywithme.exception.NoContentException;
+import december.spring.studywithme.exception.PageException;
 import december.spring.studywithme.exception.PostException;
 import december.spring.studywithme.repository.PostRepository;
 import december.spring.studywithme.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +59,7 @@ public class PostService {
 	 * @return PostResponseDTO 게시글 전체 조회 결과
 	 */
 	public List<PostResponseDTO> getAllPost() {
-		List<Post> postList = postRepository.findAllByOrderByCreateAtDesc();
+		List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
 		
 		if (postList.isEmpty()) {
 			throw new NoContentException("먼저 작성하여 소식을 알려보세요!");
@@ -92,7 +98,28 @@ public class PostService {
 		checkPostWriter(post, userDetails);
 		postRepository.delete(post);
 	}
-	
+
+	/**
+	 * 6. 전체 게시글 페이지 조회
+	 * @param page 접근할 페이지
+	 * @param sortBy 게시글 정렬 기준
+	 * @return PostPageResponseDTO 게시글 페이지 조회 결과
+	 */
+	public PostPageResponseDTO getAllPostByPage(Integer page, String sortBy) {
+		Pageable pageable = createPageable(page, sortBy);
+		Page<Post> postPage = postRepository.findAll(pageable);
+
+		if (postPage.getTotalElements() == 0) {
+			throw new NoContentException("가장 먼저 게시글을 작성해보세요!");
+		}
+
+		if (page <= 0 || page > postPage.getTotalPages()) {
+			throw new PageException("페이지가 존재하지 않습니다.");
+		}
+
+		return new PostPageResponseDTO(page, postPage);
+	}
+
 	/**
 	 * 게시글 존재 여부 확인
 	 * @param id 게시글 ID
@@ -102,7 +129,7 @@ public class PostService {
 		return postRepository.findById(id).orElseThrow(() ->
 			new PostException("게시글이 존재하지 않습니다."));
 	}
-	
+
 	/**
 	 * 게시글 작성자 확인
 	 * @param post 게시글
@@ -112,5 +139,15 @@ public class PostService {
 		if (!post.getUser().getUserId().equals(userDetails.getUsername())) {
 			throw new PostException("작성자가 아니므로, 접근이 제한됩니다.");
 		}
+	}
+
+	/**
+	 * Pageable 객체 생성
+	 * @param page 접근할 페이지
+	 * @param sortBy 게시글 정렬 기준
+	 * @return Pageable 객체
+	 */
+	public Pageable createPageable(int page, String sortBy) {
+		return PageRequest.of(page - 1, 10, Sort.Direction.DESC, sortBy);
 	}
 }

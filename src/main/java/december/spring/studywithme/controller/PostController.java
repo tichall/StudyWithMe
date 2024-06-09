@@ -1,5 +1,6 @@
 package december.spring.studywithme.controller;
 
+import december.spring.studywithme.dto.PostPageResponseDTO;
 import december.spring.studywithme.dto.PostRequestDTO;
 import december.spring.studywithme.dto.PostResponseDTO;
 import december.spring.studywithme.dto.ResponseMessage;
@@ -121,6 +122,28 @@ public class PostController {
 				.statusCode(HttpStatus.OK.value())
 				.message("게시글 삭제가 완료되었습니다.")
 				.data(id)
+				.build();
+
+		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+	}
+
+	/**
+	 * 6. 전체 게시글 페이지 조회
+	 * @param page
+	 * @param sortBy
+	 * @return
+	 */
+	@GetMapping("/pages")
+	public ResponseEntity<ResponseMessage<PostPageResponseDTO>> getAllPostByPage(
+			@RequestParam("page") Integer page,
+			@RequestParam("sortBy")  String sortBy
+	) {
+		PostPageResponseDTO pageResponseDto = postService.getAllPostByPage(page, sortBy);
+
+		ResponseMessage<PostPageResponseDTO> responseMessage = ResponseMessage.<PostPageResponseDTO>builder()
+				.statusCode(HttpStatus.OK.value())
+				.message("전체 게시글 페이지 조회가 완료되었습니다.")
+				.data(pageResponseDto)
 				.build();
 
 		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
