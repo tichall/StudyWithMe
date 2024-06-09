@@ -30,7 +30,7 @@ public class LikeService {
         if (post.getUser().getUserId().equals(user.getUserId())) {
             throw new LikeException("본인이 작성한 게시글에는 좋아요를 남길 수 없습니다.");
         }
-        
+
         boolean result = postLikeUpdate(user, post);
         updateLikes(post);
         return result;
@@ -51,7 +51,7 @@ public class LikeService {
         if (comment.getUser().getUserId().equals(user.getUserId())) {
             throw new LikeException("본인이 작성한 댓글에는 좋아요를 남길 수 없습니다.");
         }
-        
+
         boolean result = commentLikeUpdate(user, comment);
         updateLikes(comment);
         return result;
@@ -100,6 +100,7 @@ public class LikeService {
                 .build();
             commentLikeRepository.save(commentLike);
         }
+
         return commentLike.isLike();
     }
     
@@ -120,5 +121,4 @@ public class LikeService {
         Long countLikes = commentLikeRepository.countByCommentAndIsLike(comment);
         comment.updateCommentLikes(countLikes);
     }
-    
 }

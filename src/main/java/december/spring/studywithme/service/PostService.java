@@ -1,5 +1,6 @@
 package december.spring.studywithme.service;
 
+
 import december.spring.studywithme.dto.PostRequestDTO;
 import december.spring.studywithme.dto.PostResponseDTO;
 import december.spring.studywithme.entity.Post;
@@ -18,7 +19,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class PostService {
 	private final PostRepository postRepository;
-	
+
 	/**
 	 * 1. 게시글 생성
 	 * @param userDetails 로그인한 사용자의 세부 정보

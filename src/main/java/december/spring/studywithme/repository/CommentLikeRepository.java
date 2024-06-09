@@ -2,7 +2,6 @@ package december.spring.studywithme.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import december.spring.studywithme.entity.Comment;
 import december.spring.studywithme.entity.CommentLike;
 import december.spring.studywithme.entity.User;

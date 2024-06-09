@@ -168,7 +168,7 @@ public class UserService {
     @Transactional
     public UserResponseDTO editPassword(EditPasswordRequestDTO requestDTO, UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        
+      
         if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
             throw new UserException("현재 비밀번호가 일치하지 않습니다.");
         }
