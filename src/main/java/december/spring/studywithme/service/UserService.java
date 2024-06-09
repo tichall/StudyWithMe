@@ -65,7 +65,7 @@ public class UserService {
         checkUserType(user.getUserType());
 
         //비밀번호 일치 확인
-        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
             throw new UserException("비밀번호가 일치하지 않습니다.");
         }
 
