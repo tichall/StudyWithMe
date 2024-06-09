@@ -53,7 +53,7 @@ public class PostService {
 	 * @return PostResponseDTO 게시글 전체 조회 결과
 	 */
 	public List<PostResponseDTO> getAllPost() {
-		List<Post> postList = postRepository.findAllByOrderByCreateAtDesc();
+		List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
 		
 		if (postList.isEmpty()) {
 			throw new NoContentException("먼저 작성하여 소식을 알려보세요!");
