@@ -134,16 +134,34 @@ public class PostController {
 	 * @return
 	 */
 	@GetMapping("/pages")
-	public ResponseEntity<ResponseMessage<PostPageResponseDTO>> getAllPostByPage(
+	public ResponseEntity<ResponseMessage<PostPageResponseDTO>> getPostPage(
 			@RequestParam("page") Integer page,
 			@RequestParam("sortBy")  String sortBy
 	) {
-		PostPageResponseDTO pageResponseDto = postService.getAllPostByPage(page, sortBy);
+		PostPageResponseDTO pageResponseDto = postService.getPostPage(page, sortBy);
 
 		ResponseMessage<PostPageResponseDTO> responseMessage = ResponseMessage.<PostPageResponseDTO>builder()
 				.statusCode(HttpStatus.OK.value())
 				.message("전체 게시글 페이지 조회가 완료되었습니다.")
 				.data(pageResponseDto)
+				.build();
+
+		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<ResponseMessage<PostPageResponseDTO>> getPostPageByPeriod(
+			@RequestParam("from") String start,
+			@RequestParam("to") String finish,
+			@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+			@RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy
+	) {
+		PostPageResponseDTO responseDto = postService.getPostPageByPeriod(start, finish, page, sortBy);
+
+		ResponseMessage<PostPageResponseDTO> responseMessage = ResponseMessage.<PostPageResponseDTO>builder()
+				.statusCode(HttpStatus.OK.value())
+				.message("기간별 전체 게시글 조회가 완료되었습니다.")
+				.data(responseDto)
 				.build();
 
 		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);

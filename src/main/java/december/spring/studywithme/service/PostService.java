@@ -18,6 +18,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -105,17 +108,28 @@ public class PostService {
 	 * @param sortBy 게시글 정렬 기준
 	 * @return PostPageResponseDTO 게시글 페이지 조회 결과
 	 */
-	public PostPageResponseDTO getAllPostByPage(Integer page, String sortBy) {
+	public PostPageResponseDTO getPostPage(Integer page, String sortBy) {
 		Pageable pageable = createPageable(page, sortBy);
 		Page<Post> postPage = postRepository.findAll(pageable);
 
-		if (postPage.getTotalElements() == 0) {
-			throw new NoContentException("가장 먼저 게시글을 작성해보세요!");
+		checkValidatePage(postPage, page);
+
+		return new PostPageResponseDTO(page, postPage);
+	}
+
+	public PostPageResponseDTO getPostPageByPeriod(String start, String finish, Integer page, String sortBy) {
+		Pageable pageable = createPageable(page, sortBy);
+
+		LocalDateTime startDate = LocalDate.parse(start, DateTimeFormatter.ISO_DATE).atStartOfDay(); // yyyy-mm-dd 형식 파싱
+		LocalDateTime finishDate = LocalDate.parse(finish, DateTimeFormatter.ISO_DATE).plusDays(1).atStartOfDay();
+
+		if (startDate.isAfter(finishDate) || startDate.isEqual(finishDate)) {
+			throw new IllegalArgumentException("기간 설정이 올바르지 않습니다.");
 		}
 
-		if (page <= 0 || page > postPage.getTotalPages()) {
-			throw new PageException("페이지가 존재하지 않습니다.");
-		}
+		Page<Post> postPage = postRepository.findPostPageByPeriod(startDate, finishDate, pageable);
+
+		checkValidatePage(postPage, page);
 
 		return new PostPageResponseDTO(page, postPage);
 	}
@@ -150,4 +164,15 @@ public class PostService {
 	public Pageable createPageable(int page, String sortBy) {
 		return PageRequest.of(page - 1, 10, Sort.Direction.DESC, sortBy);
 	}
+
+	private void checkValidatePage(Page<Post> postPage, Integer page) {
+		if (postPage.getTotalElements() == 0) {
+			throw new NoContentException("가장 먼저 게시글을 작성해보세요!");
+		}
+
+		if (page <= 0 || page > postPage.getTotalPages()) {
+			throw new PageException("페이지가 존재하지 않습니다.");
+		}
+	}
+
 }
