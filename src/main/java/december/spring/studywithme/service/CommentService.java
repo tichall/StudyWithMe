@@ -6,7 +6,6 @@ import december.spring.studywithme.entity.*;
 import december.spring.studywithme.exception.CommentException;
 import december.spring.studywithme.exception.NoContentException;
 import december.spring.studywithme.repository.CommentRepository;
-import december.spring.studywithme.repository.LikeRepository;
 import december.spring.studywithme.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,6 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;
-    private final LikeRepository likeRepository;
 
     /**
      * 1. 댓글 등록

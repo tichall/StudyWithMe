@@ -5,11 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
+
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "likes")
-public class Like extends Timestamped {
+public class PostLike extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,25 +20,22 @@ public class Like extends Timestamped {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
-    private Long targetId;
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
     @Column(nullable = false)
     private boolean isLike;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ContentsType contentsType;
-
     @Builder
-    public Like(User user, Long targetId, ContentsType contentsType, boolean isLike) {
+    public PostLike(User user, Post post, boolean isLike) {
         this.user = user;
-        this.targetId = targetId;
-        this.contentsType = contentsType;
+        this.post = post;
         this.isLike = isLike;
     }
 
-    public void update(boolean isLike) {
-        this.isLike = isLike;
+    public void update() {
+        this.isLike = !this.isLike;
     }
+
 }
