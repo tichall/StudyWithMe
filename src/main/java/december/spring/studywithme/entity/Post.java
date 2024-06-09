@@ -1,12 +1,11 @@
 package december.spring.studywithme.entity;
 
-import december.spring.studywithme.dto.PostRequestDto;
+import december.spring.studywithme.dto.PostRequestDTO;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -45,7 +44,7 @@ public class Post extends Timestamped{
 		this.likes = 0L;
 	}
 
-	public void update(PostRequestDto requestDto) {
+	public void update(PostRequestDTO requestDto) {
 		this.title = requestDto.getTitle();
 		this.contents = requestDto.getContents();
 	}

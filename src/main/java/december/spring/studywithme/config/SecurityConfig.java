@@ -2,10 +2,9 @@ package december.spring.studywithme.config;
 
 import december.spring.studywithme.jwt.JwtUtil;
 import december.spring.studywithme.repository.UserRepository;
-import december.spring.studywithme.security.JwtAuthenticationFilter;
-import december.spring.studywithme.security.JwtAuthorizationFilter;
+import december.spring.studywithme.jwt.JwtAuthenticationFilter;
+import december.spring.studywithme.jwt.JwtAuthorizationFilter;
 import december.spring.studywithme.security.UserDetailsServiceImpl;
-import december.spring.studywithme.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
 package december.spring.studywithme.entity;
 
-import december.spring.studywithme.dto.CommentRequestDto;
+import december.spring.studywithme.dto.CommentRequestDTO;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class Comment extends Timestamped {
         this.likes = 0L;
     }
 
-    public void update(CommentRequestDto requestDto) {
+    public void update(CommentRequestDTO requestDto) {
         this.contents = requestDto.getContents();
     }
 

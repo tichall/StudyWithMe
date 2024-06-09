@@ -2,7 +2,6 @@ package december.spring.studywithme.dto;
 
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 import lombok.Getter;
 
 @Getter

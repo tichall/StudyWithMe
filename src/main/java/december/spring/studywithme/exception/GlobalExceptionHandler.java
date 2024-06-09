@@ -3,6 +3,7 @@ package december.spring.studywithme.exception;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import december.spring.studywithme.dto.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,20 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	
-	/*
-	예시코드입니다.
-	
-	@ExceptionHandler(ScheduleNotFoundException.class)
-	public ResponseEntity<String> handleScheduleNotFoundException(ScheduleNotFoundException e) {
-		log.error("excpetion = {}, message = {}", e.getClass(), e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-	}
-	
-	*/
-	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+	public ResponseEntity<ErrorMessage> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		
 		Map<String, String> errors = e.getBindingResult().getFieldErrors().stream()
 			.collect(Collectors.toMap(
@@ -42,39 +31,30 @@ public class GlobalExceptionHandler {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-	}
-	
-	
-	@ExceptionHandler(UserException.class)
-	public ResponseEntity<String> handleUserException(UserException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
 
-	@ExceptionHandler(PostException.class)
-	public ResponseEntity<String> handlePostException(PostException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		ErrorMessage errorMessage = ErrorMessage.builder()
+				.statusCode(HttpStatus.BAD_REQUEST.value())
+				.message(response)
+				.build();
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
 	}
 	
-	@ExceptionHandler(EmailException.class)
-	public ResponseEntity<String> handlePostException(EmailException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
+	@ExceptionHandler({UserException.class, PostException.class, EmailException.class,
+			LikeException.class, CommentException.class})
+	public ResponseEntity<ErrorMessage> handleNormalException(UserException e) {
 
+		ErrorMessage errorMessage = ErrorMessage.builder()
+				.statusCode(HttpStatus.BAD_REQUEST.value())
+				.message(e.getMessage())
+				.build();
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+	}
+	
 	@ExceptionHandler(NoContentException.class)
 	public ResponseEntity<String> handleNoPostException(NoContentException e) {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
 	}
-
-	@ExceptionHandler(LikeException.class)
-	public ResponseEntity<String> handleLikeException(LikeException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
-	@ExceptionHandler(CommentException.class)
-	public ResponseEntity<String> handleCommentException(CommentException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
+	
 }

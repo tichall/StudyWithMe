@@ -15,8 +15,8 @@ public class UserResponseDTO {
 	private String name;
 	private String email;
 	private String introduce;
-	private LocalDateTime createAt;
-	private LocalDateTime modifyAt;
+	private LocalDateTime createdAt;
+	private LocalDateTime modifiedAt;
 	
 	public UserResponseDTO(User user) {
 		this.id = user.getId();
@@ -24,8 +24,8 @@ public class UserResponseDTO {
 		this.name = user.getName();
 		this.email = user.getEmail();
 		this.introduce = user.getIntroduce();
-		this.createAt = user.getCreateAt();
-		this.modifyAt = user.getModifyAt();
+		this.createdAt = user.getCreatedAt();
+		this.modifiedAt = user.getModifiedAt();
 	}
 	
 }
