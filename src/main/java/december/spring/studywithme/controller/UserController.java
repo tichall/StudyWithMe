@@ -1,91 +1,104 @@
 package december.spring.studywithme.controller;
 
-
 import december.spring.studywithme.dto.*;
 import december.spring.studywithme.jwt.JwtUtil;
+import december.spring.studywithme.security.UserDetailsImpl;
+import december.spring.studywithme.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import december.spring.studywithme.security.UserDetailsImpl;
-import december.spring.studywithme.service.UserService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
-	private final UserService userService;
-	private final JwtUtil jwtUtil;
-	
-	/**
-	 * 1. 회원가입
-	 */
-	@PostMapping("/signup")
-	public ResponseEntity<ResponseMessage<UserResponseDTO>> createUser(@Valid @RequestBody UserRequestDTO requestDTO) {
-		UserResponseDTO responseDTO = userService.createUser(requestDTO);
-		
-		ResponseMessage<UserResponseDTO> responseMessage = ResponseMessage.<UserResponseDTO>builder()
-			.statusCode(HttpStatus.CREATED.value())
-			.message("회원가입이 완료되었습니다.")
-			.data(responseDTO)
-			.build();
-		
-		return new ResponseEntity<>(responseMessage, HttpStatus.CREATED);
-	}
-	
-	/**
-	 * 2. 회원 탈퇴
-	 */
-	@PutMapping("/withdraw")
-	public ResponseEntity<ResponseMessage<String>> withdrawUser(@Valid @RequestBody PasswordRequestDTO requestDTO,
-		@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		String userId = userService.withdrawUser(requestDTO, userDetails.getUser());
-		
-		ResponseMessage<String> responseMessage = ResponseMessage.<String>builder()
-			.statusCode(HttpStatus.OK.value())
-			.message("회원 탈퇴가 완료되었습니다.")
-			.data(userId)
-			.build();
-		
-		return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-	}
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-	/**
-	 * 프로필 조회 (개인)
-	 * 인증된 사용자의 정보를 조회하여 반환
-	 *
-	 * @param userDetails 현재 인증된 사용자의 정보를 담고 있는 UserDetailsImpl 객체
-	 * @return 사용자 정보를 담은 UserProfileResponseDTO 객체
-	 */
-	@GetMapping("/mypage")
-	public ResponseEntity<ResponseMessage<UserProfileResponseDTO>> userInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-		UserProfileResponseDTO userInfoResponseDTO = userService.inquiryUser(userDetails.getUsername());
-		return ResponseEntity.ok(ResponseMessage.<UserProfileResponseDTO>builder()
-				.statusCode(HttpStatus.OK.value())
-				.data(userInfoResponseDTO)
-				.build());
-	}
+    /**
+     * 1. 회원가입
+     */
+    @PostMapping("/signup")
+    public ResponseEntity<ResponseMessage<UserResponseDTO>> createUser(@Valid @RequestBody UserRequestDTO requestDTO) {
+        UserResponseDTO responseDTO = userService.createUser(requestDTO);
 
-	@PutMapping()
-	public ResponseEntity<ResponseMessage<UserResponseDTO>> updateUser(@RequestBody UserProfileUpateRequestDTO requestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-		// 현재 사용자의 인증 정보 가져오기
-		// 사용자 정보 수정
-		UserResponseDTO userResponseDTO = userService.updateProfile(requestDTO, userDetails.getUser());
+        ResponseMessage<UserResponseDTO> responseMessage = ResponseMessage.<UserResponseDTO>builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .message("회원가입이 완료되었습니다.")
+                .data(responseDTO)
+                .build();
 
-		ResponseMessage<UserResponseDTO> responseMessage = ResponseMessage.<UserResponseDTO>builder()
-				.statusCode(HttpStatus.OK.value())
-				.message("프로필 수정이 완료되었습니다.")
-				.data(userResponseDTO)
-				.build();
+        return new ResponseEntity<>(responseMessage, HttpStatus.CREATED);
+    }
 
-		return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    /**
+     * 2. 회원 탈퇴
+     */
+    @PutMapping("/withdraw")
+    public ResponseEntity<ResponseMessage<String>> withdrawUser(@Valid @RequestBody PasswordRequestDTO requestDTO,
+                                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        String userId = userService.withdrawUser(requestDTO, userDetails.getUser());
 
-	}
+        ResponseMessage<String> responseMessage = ResponseMessage.<String>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("회원 탈퇴가 완료되었습니다.")
+                .data(userId)
+                .build();
+
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
+
+    /**
+     * 프로필 조회 (개인)
+     * 인증된 사용자의 정보를 조회하여 반환
+     *
+     * @param userDetails 현재 인증된 사용자의 정보를 담고 있는 UserDetailsImpl 객체
+     * @return 사용자 정보를 담은 UserProfileResponseDTO 객체
+     */
+    @GetMapping("/mypage")
+    public ResponseEntity<ResponseMessage<UserProfileResponseDTO>> userInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserProfileResponseDTO userInfoResponseDTO = userService.inquiryUser(userDetails.getUsername());
+        return ResponseEntity.ok(ResponseMessage.<UserProfileResponseDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .data(userInfoResponseDTO)
+                .build());
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseMessage<UserResponseDTO>> getProfileById(@PathVariable Long id) {
+        UserResponseDTO userResponseDTO = userService.inquiryUserById(id);
+        return ResponseEntity.ok(ResponseMessage.<UserResponseDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .data(userResponseDTO)
+                .build());
+    }
+
+    @PutMapping("/mypage")
+    public ResponseEntity<ResponseMessage<UserResponseDTO>> updateUser(@Valid @RequestBody UserProfileUpdateRequestDTO requestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserResponseDTO userResponseDTO = userService.editProfile(requestDTO, userDetails.getUser());
+        ResponseMessage<UserResponseDTO> responseMessage = ResponseMessage.<UserResponseDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("프로필 수정이 완료되었습니다.")
+                .data(userResponseDTO)
+                .build();
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<ResponseMessage<UserResponseDTO>> updatePassword(@Valid @RequestBody EditPasswordRequestDTO requestDTO, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserResponseDTO userResponseDTO = userService.editPassword(requestDTO, userDetails);
+        ResponseMessage<UserResponseDTO> responseMessage = ResponseMessage.<UserResponseDTO>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("비밀번호가 변경되었습니다.")
+                .data(userResponseDTO)
+                .build();
+        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+    }
 
 	/**
 	 * 로그아웃

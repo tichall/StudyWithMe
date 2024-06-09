@@ -68,6 +68,7 @@ public class User extends Timestamped {
         this.userType = userType;
         this.statusChangedAt = statusChangedAt;
     }
+
     //회원 상태 변경 - 탈퇴 회원
     public void withdrawUser() {
         this.userType = UserType.DEACTIVATED;
@@ -84,9 +85,12 @@ public class User extends Timestamped {
         this.refreshToken = refreshToken;
     }
 
-    public void editProfile(String name, String password, String introduce) {
+    public void editProfile(String name, String introduce) {
         this.name = name;
         this.introduce = introduce;
-        this.password = password;
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 }

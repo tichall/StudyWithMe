@@ -54,3 +54,4 @@ public class Post extends Timestamped{
 		this.likes = likes;
 	}
 }
+
