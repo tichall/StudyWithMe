@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import december.spring.studywithme.dto.ErrorMessage;
+import december.spring.studywithme.dto.ResponseMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,8 +42,8 @@ public class GlobalExceptionHandler {
 	}
 	
 	@ExceptionHandler({UserException.class, PostException.class, EmailException.class,
-			LikeException.class, CommentException.class})
-	public ResponseEntity<ErrorMessage> handleNormalException(UserException e) {
+			LikeException.class, CommentException.class, PageException.class})
+	public ResponseEntity<ErrorMessage> handleNormalException(Exception e) {
 
 		ErrorMessage errorMessage = ErrorMessage.builder()
 				.statusCode(HttpStatus.BAD_REQUEST.value())
@@ -53,8 +54,13 @@ public class GlobalExceptionHandler {
 	}
 	
 	@ExceptionHandler(NoContentException.class)
-	public ResponseEntity<String> handleNoPostException(NoContentException e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+	public ResponseEntity<ResponseMessage<Void>> handleNoContentException(NoContentException e) {
+		ResponseMessage<Void> responseMessage = ResponseMessage.<Void>builder()
+				.statusCode(HttpStatus.OK.value())
+				.message(e.getMessage())
+				.build();
+
+		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
 	}
 	
 }

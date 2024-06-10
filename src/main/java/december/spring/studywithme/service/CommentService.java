@@ -86,7 +86,6 @@ public class CommentService {
 
         comment.update(requestDto);
         commentRepository.save(comment);
-        commentRepository.flush();
 
         return new CommentResponseDTO(comment);
     }
