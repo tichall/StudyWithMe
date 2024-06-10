@@ -45,7 +45,8 @@ public class User extends Timestamped {
     
     private String introduce;
     
-    
+
+    @Column(columnDefinition = "varchar(30)")
     @Enumerated(value = EnumType.STRING)
     private UserType userType;
     
