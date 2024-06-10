@@ -85,7 +85,7 @@ public class PostService {
 		
 		// 수정 진행
 		post.update(requestDto);
-		postRepository.flush();
+		postRepository.save(post);
 		
 		return new PostResponseDTO(post);
 	}
