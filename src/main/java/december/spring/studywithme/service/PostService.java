@@ -42,11 +42,11 @@ public class PostService {
 			.contents(request.getContents())
 			.user(userDetails.getUser())
 			.build();
-		
+
 		Post savePost = postRepository.save(post);
 		return new PostResponseDTO(savePost);
 	}
-	
+
 	/**
 	 * 2. 게시글 단일 조회
 	 * @param id 게시글의 ID
@@ -56,21 +56,21 @@ public class PostService {
 		Post post = getValidatePost(id);
 		return new PostResponseDTO(post);
 	}
-	
+
 	/**
 	 * 3. 게시글 전체 조회
 	 * @return PostResponseDTO 게시글 전체 조회 결과
 	 */
 	public List<PostResponseDTO> getAllPost() {
 		List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
-		
+
 		if (postList.isEmpty()) {
 			throw new NoContentException("먼저 작성하여 소식을 알려보세요!");
 		}
-		
+
 		return postList.stream().map(PostResponseDTO::new).toList();
 	}
-	
+
 	/**
 	 * 4. 게시글 수정
 	 * @param id 게시글의 ID
@@ -82,14 +82,14 @@ public class PostService {
 	public PostResponseDTO updatePost(Long id, UserDetailsImpl userDetails, PostRequestDTO requestDto) {
 		Post post = getValidatePost(id);
 		checkPostWriter(post, userDetails);
-		
+
 		// 수정 진행
 		post.update(requestDto);
 		postRepository.save(post);
-		
+
 		return new PostResponseDTO(post);
 	}
-	
+
 	/**
 	 * 5. 게시글 삭제
 	 * @param id 게시글의 ID
@@ -102,46 +102,27 @@ public class PostService {
 		postRepository.delete(post);
 	}
 
-	/**
-	 * 6. 전체 게시글 페이지 조회
-	 * @param page 접근할 페이지
-	 * @param sortBy 게시글 정렬 기준
-	 * @return PostPageResponseDTO 게시글 페이지 조회 결과
-	 */
-	public PostPageResponseDTO getPostPage(Integer page, String sortBy) {
+	public PostPageResponseDTO getPostPage(String start, String finish, Integer page, String sortBy) {
 		Pageable pageable = createPageable(page, sortBy);
-		Page<Post> postPage = postRepository.findAll(pageable);
+		Page<Post> postPage;
 
-		checkValidatePage(postPage, page);
+		if (start != null && finish != null) { // NullPointException 방지
+			LocalDateTime startDate = LocalDate.parse(start, DateTimeFormatter.ISO_DATE).atStartOfDay();
+			LocalDateTime finishDate = LocalDate.parse(finish, DateTimeFormatter.ISO_DATE).plusDays(1).atStartOfDay();
 
-		return new PostPageResponseDTO(page, postPage);
-	}
+			if (startDate.isAfter(finishDate) || startDate.isEqual(finishDate)) {
+				throw new IllegalArgumentException("기간 설정이 올바르지 않습니다.");
+			}
 
-	/**
-	 * 7. 기간별 게시글 페이지 조회
-	 * @param start 기간 시작 일자
-	 * @param finish 기간 마지막 일자
-	 * @param page 접근할 페이지
-	 * @param sortBy 게시글 정렬 기준
-	 * @return PostPageResponseDTO 게시글 페이지 조회 결과
-	 */
-	public PostPageResponseDTO getPostPageByPeriod(String start, String finish, Integer page, String sortBy) {
-		Pageable pageable = createPageable(page, sortBy);
-
-		LocalDateTime startDate = LocalDate.parse(start, DateTimeFormatter.ISO_DATE).atStartOfDay(); // yyyy-mm-dd 형식 파싱
-		LocalDateTime finishDate = LocalDate.parse(finish, DateTimeFormatter.ISO_DATE).plusDays(1).atStartOfDay();
-
-		if (startDate.isAfter(finishDate) || startDate.isEqual(finishDate)) {
-			throw new IllegalArgumentException("기간 설정이 올바르지 않습니다.");
+			postPage = postRepository.findPostPageByPeriod(startDate, finishDate, pageable);
+		} else {
+			postPage = postRepository.findAll(pageable);
 		}
 
-		Page<Post> postPage = postRepository.findPostPageByPeriod(startDate, finishDate, pageable);
-
 		checkValidatePage(postPage, page);
 
 		return new PostPageResponseDTO(page, postPage);
 	}
-
 	/**
 	 * 게시글 존재 여부 확인
 	 * @param id 게시글 ID
