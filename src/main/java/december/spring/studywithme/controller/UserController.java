@@ -97,7 +97,7 @@ public class UserController {
 	 * 	   - 데이터: 조회된 회원의 정보를 담고 있는 UserResponseDTO 객체
 	 */
 	@GetMapping("/{id}")
-	public ResponseEntity<ResponseMessage<UserResponseDTO>> getProfileById(@PathVariable Long id) {
+	public ResponseEntity<ResponseMessage<UserResponseDTO>> getUserProfileById(@PathVariable Long id) {
 		UserResponseDTO userResponseDTO = userService.inquiryUserById(id);
 		
 		ResponseMessage<UserResponseDTO> responseMessage = ResponseMessage.<UserResponseDTO>builder()
@@ -118,7 +118,7 @@ public class UserController {
 	 * 	   - 데이터: 조회된 사용자의 정보를 담고 있는 UserProfileResponseDTO 객체
 	 */
 	@GetMapping("/mypage")
-	public ResponseEntity<ResponseMessage<UserProfileResponseDTO>> userInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+	public ResponseEntity<ResponseMessage<UserProfileResponseDTO>> userProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		UserProfileResponseDTO responseDTO = userService.inquiryUser(userDetails.getUsername());
 		
 		ResponseMessage<UserProfileResponseDTO> responseMessage = ResponseMessage.<UserProfileResponseDTO>builder()
