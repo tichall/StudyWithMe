@@ -68,28 +68,29 @@ public class PostController {
     }
 
     /**
-     * 6. 전체 게시글 페이지 조회
+     * 3. 전체 게시글 페이지 조회
      *
-     * @param page   접근할 페이지
+     * @param page 접근할 페이지
      * @param sortBy 게시글 정렬 기준
+     * @param from 기간 시작 일자
+     * @param to 기간 마지막 일자
      * @return ResponseEntity<ResponseMessage < PostPageResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
      * - 상태 코드: 게시글 조회가 성공적으로 이루어지면 200 (OK)
      * - 메시지: 게시글 조회 상태를 설명하는 메시지
      * - 데이터: 조회된 페이지와 게시글의 정보를 담고 있는 PostPageResponseDTO 객체
      */
-
     @GetMapping
     public ResponseEntity<ResponseMessage<PostPageResponseDTO>> getPostPage(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
-            @RequestParam(value = "from", required = false) String start,
-            @RequestParam(value = "to", required = false) String finish
+            @RequestParam(value = "from", required = false) String from,
+            @RequestParam(value = "to", required = false) String to
     ) {
-        PostPageResponseDTO pageResponseDto = postService.getPostPage(start, finish, page, sortBy);
+        PostPageResponseDTO pageResponseDto = postService.getPostPage(page, sortBy, from, to);
 
         ResponseMessage<PostPageResponseDTO> responseMessage = ResponseMessage.<PostPageResponseDTO>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("게시글 페이지 조회가 완료되었습니다.") // 메세지 사용 여부
+                .message("게시글 페이지 조회가 완료되었습니다.")
                 .data(pageResponseDto)
                 .build();
 

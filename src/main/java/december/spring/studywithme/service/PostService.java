@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -58,17 +59,37 @@ public class PostService {
 	}
 
 	/**
-	 * 3. 게시글 전체 조회
-	 * @return PostResponseDTO 게시글 전체 조회 결과
+	 * 3. 전체 게시글 페이지 조회
+	 * @param page 접근할 페이지
+	 * @param sortBy 게시글 정렬 기준
+	 * @param from 기간 시작 일자
+	 * @param to 기간 마지막 일자
+	 * @return PostPageResponseDTO 게시글 페이지 조회 결과
 	 */
-	public List<PostResponseDTO> getAllPost() {
-		List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
+	public PostPageResponseDTO getPostPage(Integer page, String sortBy, String from, String to) {
+		Pageable pageable = createPageable(page, sortBy);
+		Page<Post> postPage;
 
-		if (postList.isEmpty()) {
-			throw new NoContentException("먼저 작성하여 소식을 알려보세요!");
+		if (from != null && to != null) {
+			try {
+				LocalDateTime startDate = LocalDate.parse(from, DateTimeFormatter.ISO_DATE).atStartOfDay();
+				LocalDateTime finishDate = LocalDate.parse(to, DateTimeFormatter.ISO_DATE).plusDays(1).atStartOfDay();
+
+				if (startDate.isAfter(finishDate) || startDate.isEqual(finishDate)) {
+					throw new IllegalArgumentException("기간 설정이 올바르지 않습니다.");
+				}
+
+				postPage = postRepository.findPostPageByPeriod(startDate, finishDate, pageable);
+			} catch (DateTimeParseException e) {
+				throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다. yyyy-mm-dd 형식으로 입력해주세요!");
+			}
+
+		} else {
+			postPage = postRepository.findAll(pageable);
 		}
 
-		return postList.stream().map(PostResponseDTO::new).toList();
+		checkValidatePage(postPage, page);
+		return new PostPageResponseDTO(page, postPage);
 	}
 
 	/**
@@ -102,27 +123,6 @@ public class PostService {
 		postRepository.delete(post);
 	}
 
-	public PostPageResponseDTO getPostPage(String start, String finish, Integer page, String sortBy) {
-		Pageable pageable = createPageable(page, sortBy);
-		Page<Post> postPage;
-
-		if (start != null && finish != null) { // NullPointException 방지
-			LocalDateTime startDate = LocalDate.parse(start, DateTimeFormatter.ISO_DATE).atStartOfDay();
-			LocalDateTime finishDate = LocalDate.parse(finish, DateTimeFormatter.ISO_DATE).plusDays(1).atStartOfDay();
-
-			if (startDate.isAfter(finishDate) || startDate.isEqual(finishDate)) {
-				throw new IllegalArgumentException("기간 설정이 올바르지 않습니다.");
-			}
-
-			postPage = postRepository.findPostPageByPeriod(startDate, finishDate, pageable);
-		} else {
-			postPage = postRepository.findAll(pageable);
-		}
-
-		checkValidatePage(postPage, page);
-
-		return new PostPageResponseDTO(page, postPage);
-	}
 	/**
 	 * 게시글 존재 여부 확인
 	 * @param id 게시글 ID
