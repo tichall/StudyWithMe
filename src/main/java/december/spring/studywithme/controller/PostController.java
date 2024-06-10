@@ -132,9 +132,9 @@ public class PostController {
 	 * @param page 접근할 페이지
 	 * @param sortBy 게시글 정렬 기준
 	 * @return ResponseEntity<ResponseMessage<PostPageResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
-	 * 	 * 	   - 상태 코드: 게시글 조회가 성공적으로 이루어지면 200 (OK)
-	 * 	 * 	   - 메시지: 게시글 조회 상태를 설명하는 메시지
-	 * 	 * 	   - 데이터: 조회된 페이지와 게시글의 정보를 담고 있는 PostPageResponseDTO 객체
+	 * 		- 상태 코드: 게시글 조회가 성공적으로 이루어지면 200 (OK)
+	 * 		- 메시지: 게시글 조회 상태를 설명하는 메시지
+	 * 	 	- 데이터: 조회된 페이지와 게시글의 정보를 담고 있는 PostPageResponseDTO 객체
 	 */
 	@GetMapping("/pages")
 	public ResponseEntity<ResponseMessage<PostPageResponseDTO>> getPostPage(
@@ -152,6 +152,17 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
 	}
 
+	/**
+	 * 7. 기간별 게시글 페이지 조회
+	 * @param start 기간 시작 일자
+	 * @param finish 기간 마지막 일자
+	 * @param page 접근할 페이지
+	 * @param sortBy 게시글 정렬 기준
+	 * @return ResponseEntity<ResponseMessage<PostPageResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+	 * 		- 상태 코드: 게시글 조회가 성공적으로 이루어지면 200 (OK)
+	 * 		- 메시지: 게시글 조회 상태를 설명하는 메시지
+	 * 	 	- 데이터: 조회된 페이지와 게시글의 정보를 담고 있는 PostPageResponseDTO 객체
+	 */
 	@GetMapping("/search")
 	public ResponseEntity<ResponseMessage<PostPageResponseDTO>> getPostPageByPeriod(
 			@RequestParam("from") String start,

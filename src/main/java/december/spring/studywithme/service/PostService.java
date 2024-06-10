@@ -117,6 +117,14 @@ public class PostService {
 		return new PostPageResponseDTO(page, postPage);
 	}
 
+	/**
+	 * 7. 기간별 게시글 페이지 조회
+	 * @param start 기간 시작 일자
+	 * @param finish 기간 마지막 일자
+	 * @param page 접근할 페이지
+	 * @param sortBy 게시글 정렬 기준
+	 * @return PostPageResponseDTO 게시글 페이지 조회 결과
+	 */
 	public PostPageResponseDTO getPostPageByPeriod(String start, String finish, Integer page, String sortBy) {
 		Pageable pageable = createPageable(page, sortBy);
 
@@ -165,6 +173,11 @@ public class PostService {
 		return PageRequest.of(page - 1, 10, Sort.Direction.DESC, sortBy);
 	}
 
+	/**
+	 * 페이지 유효성 검사
+	 * @param postPage 조회된 Page<Post> 객체
+	 * @param page 접근할 페이지
+	 */
 	private void checkValidatePage(Page<Post> postPage, Integer page) {
 		if (postPage.getTotalElements() == 0) {
 			throw new NoContentException("가장 먼저 게시글을 작성해보세요!");
