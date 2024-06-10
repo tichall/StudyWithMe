@@ -92,7 +92,7 @@ public class PostService {
 				postPage = postRepository.findAll(pageable);
 			}
 		} catch (DateTimeParseException e) {
-		throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다. yyyy-mm-dd 형식으로 입력해주세요!");
+			throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다. yyyy-mm-dd 형식으로 입력해주세요!");
 		}
 
 		checkValidatePage(postPage, page);

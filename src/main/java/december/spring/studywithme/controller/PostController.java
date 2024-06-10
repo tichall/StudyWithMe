@@ -27,7 +27,7 @@ public class PostController {
      *
      * @param userDetails 로그인한 사용자의 세부 정보
      * @param request     게시글 생성 요청 데이터
-     * @return ResponseEntity<ResponseMessage < PostResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+     * @return ResponseEntity<ResponseMessage<PostResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
      * - 상태 코드: 게시글이 성공적으로 생성되면 201 (CREATED)
      * - 메시지: 게시글 생성 상태를 설명하는 메시지
      * - 데이터: 생성된 게시글의 정보를 담고 있는 PostResponseDTO 객체
@@ -49,7 +49,7 @@ public class PostController {
      * 2. 단일 게시글 조회
      *
      * @param id 게시글의 ID
-     * @return ResponseEntity<ResponseMessage < PostResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+     * @return ResponseEntity<ResponseMessage<PostResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
      * - 상태 코드: 게시글 조회가 성공적으로 이루어지면 200 (OK)
      * - 메시지: 게시글 조회 상태를 설명하는 메시지
      * - 데이터: 조회된 게시글의 정보를 담고 있는 PostResponseDTO 객체
@@ -74,7 +74,7 @@ public class PostController {
      * @param sortBy 게시글 정렬 기준
      * @param from 기간 시작 일자
      * @param to 기간 마지막 일자
-     * @return ResponseEntity<ResponseMessage < PostPageResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+     * @return ResponseEntity<ResponseMessage<PostPageResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
      * - 상태 코드: 게시글 조회가 성공적으로 이루어지면 200 (OK)
      * - 메시지: 게시글 조회 상태를 설명하는 메시지
      * - 데이터: 조회된 페이지와 게시글의 정보를 담고 있는 PostPageResponseDTO 객체
@@ -103,7 +103,7 @@ public class PostController {
      * @param id          게시글의 ID
      * @param userDetails 로그인한 사용자의 세부 정보
      * @param requestDto  게시글 수정 요청 데이터
-     * @return ResponseEntity<ResponseMessage < PostResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+     * @return ResponseEntity<ResponseMessage<PostResponseDTO>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
      */
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMessage<PostResponseDTO>> updatePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PostRequestDTO requestDto) {
@@ -123,7 +123,7 @@ public class PostController {
      *
      * @param id          게시글의 ID
      * @param userDetails 로그인한 사용자의 세부 정보
-     * @return ResponseEntity<ResponseMessage < Long>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
+     * @return ResponseEntity<ResponseMessage<Long>> 형태의 HTTP 응답. 이 응답은 다음을 포함한다:
      * - 상태 코드: 게시글 삭제가 성공적으로 이루어지면 200 (OK)
      * - 메시지: 게시글 삭제 상태를 설명하는 메시지
      * - 데이터: 삭제된 게시글의 ID
