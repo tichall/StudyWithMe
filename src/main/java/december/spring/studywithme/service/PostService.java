@@ -11,6 +11,7 @@ import december.spring.studywithme.exception.PostException;
 import december.spring.studywithme.repository.PostRepository;
 import december.spring.studywithme.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -70,22 +71,28 @@ public class PostService {
 		Pageable pageable = createPageable(page, sortBy);
 		Page<Post> postPage;
 
-		if (from != null && to != null) {
-			try {
-				LocalDateTime startDate = LocalDate.parse(from, DateTimeFormatter.ISO_DATE).atStartOfDay();
-				LocalDateTime finishDate = LocalDate.parse(to, DateTimeFormatter.ISO_DATE).plusDays(1).atStartOfDay();
+		try {
+			if (from != null && to != null) {
+				LocalDateTime startDate = parseDateString(from, true);
+				LocalDateTime finishDate = parseDateString(to, false);
 
 				if (startDate.isAfter(finishDate) || startDate.isEqual(finishDate)) {
 					throw new IllegalArgumentException("기간 설정이 올바르지 않습니다.");
 				}
 
 				postPage = postRepository.findPostPageByPeriod(startDate, finishDate, pageable);
-			} catch (DateTimeParseException e) {
-				throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다. yyyy-mm-dd 형식으로 입력해주세요!");
-			}
 
-		} else {
-			postPage = postRepository.findAll(pageable);
+			} else if (from != null) {
+				LocalDateTime startDate = parseDateString(from, true);
+				postPage = postRepository.findPostPageByStartDate(startDate, pageable);
+			} else if (to != null) {
+				LocalDateTime finishDate = parseDateString(to, false);
+				postPage = postRepository.findPostPageByFinishDate(finishDate, pageable);
+			} else {
+				postPage = postRepository.findAll(pageable);
+			}
+		} catch (DateTimeParseException e) {
+		throw new IllegalArgumentException("날짜 형식이 올바르지 않습니다. yyyy-mm-dd 형식으로 입력해주세요!");
 		}
 
 		checkValidatePage(postPage, page);
@@ -155,18 +162,28 @@ public class PostService {
 	}
 
 	/**
+	 * 날짜 문자열 파싱
+	 * @param date 파싱할 날짜 문자열
+	 * @param isStartDate 시작 일자 여부
+	 * @return LocalDateTime 객체
+	 */
+	public LocalDateTime parseDateString(String date, boolean isStartDate) {
+		LocalDate parseDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
+		return isStartDate ? parseDate.atStartOfDay() : parseDate.plusDays(1).atStartOfDay();
+	}
+
+	/**
 	 * 페이지 유효성 검사
 	 * @param postPage 조회된 Page<Post> 객체
 	 * @param page 접근할 페이지
 	 */
 	private void checkValidatePage(Page<Post> postPage, Integer page) {
 		if (postPage.getTotalElements() == 0) {
-			throw new NoContentException("가장 먼저 게시글을 작성해보세요!");
+			throw new NoContentException("게시글이 존재하지 않습니다.");
 		}
 
-		if (page <= 0 || page > postPage.getTotalPages()) {
+		if (page < 1 || page > postPage.getTotalPages()) {
 			throw new PageException("페이지가 존재하지 않습니다.");
 		}
 	}
-
 }
