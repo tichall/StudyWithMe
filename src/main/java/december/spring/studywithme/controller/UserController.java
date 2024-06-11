@@ -81,7 +81,7 @@ public class UserController {
 		
 		ResponseMessage<String> responseMessage = ResponseMessage.<String>builder()
 			.statusCode(HttpStatus.OK.value())
-			.message("회원 탈퇴가 완료되었습니다.")
+			.message("로그아웃이 완료되었습니다.")
 			.data(userDetails.getUser().getUserId())
 			.build();
 		
