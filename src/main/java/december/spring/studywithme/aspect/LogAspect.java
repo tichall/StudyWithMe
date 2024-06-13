@@ -1,19 +1,32 @@
 package december.spring.studywithme.aspect;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Slf4j
 @Aspect
 @Component
 public class LogAspect {
     // 포인트컷 시그니처
+
+    @Pointcut("execution(* december.spring.studywithme..*Controller.*(..))")
+    public void controller() {}
     @Pointcut("execution(* december.spring.studywithme..*Service.*(..))")
     public void service() {}
+
+    @Before("controller()")
+    public void doBeforeController(JoinPoint joinPoint) throws Throwable {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
+        log.info("[Http Method] {}, [Request URL] {}", request.getMethod(), request.getServletPath());
+    }
 
     @Before("service()")
     public void doBefore(JoinPoint joinPoint) throws Throwable {
