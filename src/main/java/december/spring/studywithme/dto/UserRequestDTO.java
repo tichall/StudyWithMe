@@ -1,11 +1,14 @@
 package december.spring.studywithme.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRequestDTO {
 	
 	@NotBlank(message = "아이디를 입력해 주세요")
