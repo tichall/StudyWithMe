@@ -22,6 +22,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.parameters.P;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -29,6 +30,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -65,6 +68,45 @@ public class PostControllerTest {
         mvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(springSecurity(new MockSpringSecurityFilter()))
                 .build();
+    }
+
+    private List<Post> setData() {
+        User user = User.builder()
+                .userId("helloTempUser")
+                .password("testpassword~!!")
+                .name("서연")
+                .email("0011@gmail.com")
+                .userType(UserType.ACTIVE)
+                .statusChangedAt(LocalDateTime.now())
+                .build();
+
+        List<Post> postList = new ArrayList<>();
+        Post post1 = Post.builder()
+                .user(user)
+                .title("공부할 사람")
+                .contents("당장 공부할 사람 모여라")
+                .build();
+        post1.setId(1L);
+
+        Post post2 = Post.builder()
+                .user(user)
+                .title("공부할 사람 2")
+                .contents("당장 공부할 사람 모여라 2")
+                .build();
+        post2.setId(2L);
+
+        Post post3 = Post.builder()
+                .user(user)
+                .title("공부할 사람 3")
+                .contents("당장 공부할 사람 모여라 3")
+                .build();
+        post3.setId(3L);
+
+        postList.add(post1);
+        postList.add(post2);
+        postList.add(post3);
+
+        return postList;
     }
 
     private User mockUserSetup() {
@@ -112,7 +154,7 @@ public class PostControllerTest {
         // when
         Mockito.when(postService.createPost(Mockito.any(UserDetailsImpl.class), Mockito.any(PostRequestDTO.class))).thenReturn(responseDTO);
 
-        MvcResult result = mvc.perform(post("/api/posts")
+        mvc.perform(post("/api/posts")
                 .content(body)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -123,7 +165,26 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.data.userId").value(responseDTO.getUserId()))
                 .andExpect(jsonPath("$.data.title").value(responseDTO.getTitle()))
                 .andExpect(jsonPath("$.data.contents").value(responseDTO.getContents()))
-                .andDo(print())
-                .andReturn();
+                .andDo(print());
+    }
+
+    @Test
+    void 게시글_단일_조회() throws Exception {
+        // given
+        List<Post> postList = setData();
+        Post post = postList.get(0);
+        PostResponseDTO responseDTO = new PostResponseDTO(post);
+
+        // when - then
+        Mockito.when(postService.getPost(Mockito.any(Long.class))).thenReturn(responseDTO);
+
+        mvc.perform(get("/api/posts/{id}", 1L)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("게시글 조회가 완료되었습니다."))
+                .andExpect(jsonPath("$.data.userId").value(responseDTO.getUserId()))
+                .andExpect(jsonPath("$.data.title").value(responseDTO.getTitle()))
+                .andExpect(jsonPath("$.data.contents").value(responseDTO.getContents()))
+                .andDo(print());
     }
 }
