@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Setter // 임시
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequestDTO {
