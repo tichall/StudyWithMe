@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter // Id 설정을 위해 어쩔 수 없이 추가
 @Table(name = "post")
 public class Post extends Timestamped{
 	@Id
