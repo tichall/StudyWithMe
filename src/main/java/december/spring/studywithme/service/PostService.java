@@ -97,7 +97,7 @@ public class PostService {
 		}
 
 		checkValidatePage(postPage, page);
-		return new PostPageResponseDTO(page, postPage);
+		return new PostPageResponseDTO(page, postPage, from, to);
 	}
 
 	/**
