@@ -5,6 +5,7 @@ import december.spring.studywithme.dto.PostPageResponseDTO;
 import december.spring.studywithme.dto.PostRequestDTO;
 import december.spring.studywithme.dto.PostResponseDTO;
 import december.spring.studywithme.entity.Post;
+import december.spring.studywithme.entity.User;
 import december.spring.studywithme.exception.NoContentException;
 import december.spring.studywithme.exception.PageException;
 import december.spring.studywithme.exception.PostException;
@@ -33,16 +34,16 @@ public class PostService {
 
 	/**
 	 * 1. 게시글 생성
-	 * @param userDetails 로그인한 사용자의 세부 정보
+	 * @param user 로그인한 사용자
 	 * @param request 게시글 생성 요청 데이터
 	 * @return PostResponseDTO 게시글 생성 결과
 	 */
 	@Transactional
-	public PostResponseDTO createPost(UserDetailsImpl userDetails, PostRequestDTO request) {
+	public PostResponseDTO createPost(User user, PostRequestDTO request) {
 		Post post = Post.builder()
 			.title(request.getTitle())
 			.contents(request.getContents())
-			.user(userDetails.getUser())
+			.user(user)
 			.build();
 
 		Post savePost = postRepository.save(post);
@@ -102,14 +103,14 @@ public class PostService {
 	/**
 	 * 4. 게시글 수정
 	 * @param id 게시글의 ID
-	 * @param userDetails 로그인한 사용자의 세부 정보
+	 * @param user 로그인한 사용자
 	 * @param requestDto 게시글 수정 요청 데이터
 	 * @return PostResponseDTO 게시글 수정 결과
 	 */
 	@Transactional
-	public PostResponseDTO updatePost(Long id, UserDetailsImpl userDetails, PostRequestDTO requestDto) {
+	public PostResponseDTO updatePost(Long id, User user, PostRequestDTO requestDto) {
 		Post post = getValidatePost(id);
-		checkPostWriter(post, userDetails);
+		checkPostWriter(post, user);
 
 		// 수정 진행
 		post.update(requestDto);
@@ -121,12 +122,12 @@ public class PostService {
 	/**
 	 * 5. 게시글 삭제
 	 * @param id 게시글의 ID
-	 * @param userDetails 로그인한 사용자의 세부 정보
+	 * @param user 로그인한 사용자
 	 */
 	@Transactional
-	public void deletePost(Long id, UserDetailsImpl userDetails) {
+	public void deletePost(Long id, User user) {
 		Post post = getValidatePost(id);
-		checkPostWriter(post, userDetails);
+		checkPostWriter(post, user);
 		postRepository.delete(post);
 	}
 
@@ -143,10 +144,10 @@ public class PostService {
 	/**
 	 * 게시글 작성자 확인
 	 * @param post 게시글
-	 * @param userDetails 로그인한 사용자의 세부 정보
+	 * @param user 로그인한 사용자
 	 */
-	private void checkPostWriter(Post post, UserDetailsImpl userDetails) {
-		if (!post.getUser().getUserId().equals(userDetails.getUsername())) {
+	private void checkPostWriter(Post post, User user) {
+		if (!post.getUser().getUserId().equals(user.getUserId())) {
 			throw new PostException("작성자가 아니므로, 접근이 제한됩니다.");
 		}
 	}
@@ -158,6 +159,9 @@ public class PostService {
 	 * @return Pageable 객체
 	 */
 	public Pageable createPageable(int page, String sortBy) {
+		if (page < 1) {
+			throw new PageException("페이지는 1부터 존재합니다.");
+		}
 		return PageRequest.of(page - 1, 10, Sort.Direction.DESC, sortBy);
 	}
 
@@ -182,7 +186,7 @@ public class PostService {
 			throw new NoContentException("게시글이 존재하지 않습니다.");
 		}
 
-		if (page < 1 || page > postPage.getTotalPages()) {
+		if (page > postPage.getTotalPages()) {
 			throw new PageException("페이지가 존재하지 않습니다.");
 		}
 	}
