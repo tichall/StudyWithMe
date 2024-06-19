@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class PostResponseDTO {
+    private Long id;
     private String userId;
     private String title;
     private String contents;
@@ -15,6 +16,7 @@ public class PostResponseDTO {
     private LocalDateTime modifiedAt;
 
     public PostResponseDTO(Post post) {
+        this.id = post.getId();
         this.userId = post.getUser().getUserId();
         this.title = post.getTitle();
         this.contents = post.getContents();

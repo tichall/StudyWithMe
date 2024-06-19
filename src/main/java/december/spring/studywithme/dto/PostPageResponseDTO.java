@@ -13,14 +13,18 @@ public class PostPageResponseDTO {
     private Integer totalPages;
     private Integer size;
     private String sortBy;
+    private String from;
+    private String to;
     private List<PostResponseDTO> postList;
 
-    public PostPageResponseDTO(Integer currentPage, Page<Post> postPage) {
+    public PostPageResponseDTO(Integer currentPage, Page<Post> postPage, String from, String to) {
         this.currentPage = currentPage;
         this.totalElements = postPage.getTotalElements();
         this.totalPages = postPage.getTotalPages();
         this.size = postPage.getSize();
         this.sortBy = postPage.getSort().toString();
+        this.from = from;
+        this.to = to;
         this.postList = postPage.getContent().stream().map(PostResponseDTO::new).toList();
     }
 }

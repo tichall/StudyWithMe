@@ -157,7 +157,7 @@ public class PostControllerTest {
         PostResponseDTO responseDTO = new PostResponseDTO(post);
 
         // when
-        Mockito.when(postService.createPost(Mockito.any(UserDetailsImpl.class), Mockito.any(PostRequestDTO.class))).thenReturn(responseDTO);
+        Mockito.when(postService.createPost(Mockito.any(User.class), Mockito.any(PostRequestDTO.class))).thenReturn(responseDTO);
 
         mvc.perform(post("/api/posts")
                 .content(body)
@@ -228,7 +228,7 @@ public class PostControllerTest {
 
        PostResponseDTO responseDTO = new PostResponseDTO(post);
 
-       Mockito.when(postService.updatePost(Mockito.any(Long.class), Mockito.any(UserDetailsImpl.class), Mockito.any(PostRequestDTO.class))).thenReturn(responseDTO);
+       Mockito.when(postService.updatePost(Mockito.any(Long.class), Mockito.any(User.class), Mockito.any(PostRequestDTO.class))).thenReturn(responseDTO);
 
        // when - then
        mvc.perform(put("/api/posts/{id}", 1L)

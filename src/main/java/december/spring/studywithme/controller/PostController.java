@@ -34,7 +34,7 @@ public class PostController {
      */
     @PostMapping
     public ResponseEntity<ResponseMessage<PostResponseDTO>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PostRequestDTO request) {
-        PostResponseDTO postResponseDTO = postService.createPost(userDetails, request);
+        PostResponseDTO postResponseDTO = postService.createPost(userDetails.getUser(), request);
 
         ResponseMessage<PostResponseDTO> responseMessage = ResponseMessage.<PostResponseDTO>builder()
                 .statusCode(HttpStatus.CREATED.value())
@@ -107,7 +107,7 @@ public class PostController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMessage<PostResponseDTO>> updatePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody PostRequestDTO requestDto) {
-        PostResponseDTO responseDTO = postService.updatePost(id, userDetails, requestDto);
+        PostResponseDTO responseDTO = postService.updatePost(id, userDetails.getUser(), requestDto);
 
         ResponseMessage<PostResponseDTO> responseMessage = ResponseMessage.<PostResponseDTO>builder()
                 .statusCode(HttpStatus.OK.value())
@@ -130,7 +130,7 @@ public class PostController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMessage<Long>> deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        postService.deletePost(id, userDetails);
+        postService.deletePost(id, userDetails.getUser());
 
         ResponseMessage<Long> responseMessage = ResponseMessage.<Long>builder()
                 .statusCode(HttpStatus.OK.value())
